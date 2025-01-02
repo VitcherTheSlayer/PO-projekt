@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="agh.oop.project.presenter.SettingsWindow"
+            prefHeight="800.0" prefWidth="600.0">
+    <VBox>
+        <TextField fx:id="heightTF" promptText="Height"/>
+        <TextField fx:id="widthTF" promptText="Width"/>
+        <ComboBox fx:id="mapVariantCB" promptText="Map Variant">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Globe"/>
+                    <String fx:value="Wild Owlbear"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <TextField fx:id="initialPlantsTF" promptText="Initial Plants"/>
+        <TextField fx:id="energyPerPlantTF" promptText="Energy Per Plant"/>
+        <TextField fx:id="plantGrowthPerDayTF" promptText="Plant Growth Per Day"/>
+        <TextField fx:id="initialAnimalsTF" promptText="Initial Animals"/>
+        <TextField fx:id="initialEnergyTF" promptText="Initial Energy"/>
+        <TextField fx:id="reproductionMinEnergyTF" promptText="Reproduction Min Energy"/>
+        <TextField fx:id="reproductionEnergyUsageTF" promptText="Reproduction Energy Usage"/>
+        <TextField fx:id="minMutationsTF" promptText="Min Mutations"/>
+        <TextField fx:id="maxMutationsTF" promptText="Max Mutations"/>
+        <ComboBox fx:id="mutationVariantCB" promptText="Mutation Variant">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Full Randomness"/>
+                    <String fx:value="Swap"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <TextField fx:id="genomeLengthTF" promptText="Genome Length"/>
+
+        <Button text="Save File" fx:id="saveButton" onAction="#save"/>
+        <Button text="Read File" fx:id="readButton" onAction="#read"/>
+    </VBox>
+</AnchorPane>
