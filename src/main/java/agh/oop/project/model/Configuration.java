@@ -16,6 +16,7 @@ public record Configuration(
         int minMutations,
         int maxMutations,
         MutationVariant mutationVariant,
+        int swapMutationPercent,
         int genomeLength
 ) implements Serializable {
     public Configuration {
@@ -61,6 +62,18 @@ public record Configuration(
         if(genomeLength <= 0){
             throw new IllegalArgumentException("genomeLength must be greater than 0");
         }
+        if(minMutations > genomeLength){
+            throw new IllegalArgumentException("minMutations must be less than or equal to genomeLength");
+        }
+        if(maxMutations > genomeLength){
+            throw new IllegalArgumentException("maxMutations must be less than or equal to genomeLength");
+        }
+        if(swapMutationPercent < 0){
+            throw new IllegalArgumentException("swapMutationPercent must be greater than 0");
+        }
+        if (swapMutationPercent > 100){
+            throw new IllegalArgumentException("swapMutationPercent must be less than or equal to 100");
+        }
     }
 
     public static Configuration fromFile(File file) throws IOException, ClassNotFoundException {
@@ -90,6 +103,7 @@ public record Configuration(
                 1,
                 5,
                 MutationVariant.FULL_RANDOMNESS,
+                50,
                 10
         );
 

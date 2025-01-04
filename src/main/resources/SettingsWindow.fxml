@@ -39,6 +39,7 @@
                 </FXCollections>
             </items>
         </ComboBox>
+        <TextField fx:id="swapMutationPercentTF" promptText="Swap Mutation Percent"/>
         <TextField fx:id="genomeLengthTF" promptText="Genome Length"/>
 
         <Button text="Save File" fx:id="saveButton" onAction="#save"/>

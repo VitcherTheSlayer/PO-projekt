@@ -3,6 +3,7 @@ package agh.oop.project.presenter;
 import agh.oop.project.model.Configuration;
 import agh.oop.project.model.MapVariant;
 import agh.oop.project.model.MutationVariant;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -43,8 +44,9 @@ public class SettingsWindow {
     @FXML
     private ComboBox<String> mutationVariantCB;
     @FXML
+    private TextField swapMutationPercentTF;
+    @FXML
     private TextField genomeLengthTF;
-
 
     @FXML
     private Button saveButton;
@@ -56,6 +58,11 @@ public class SettingsWindow {
 
     public void init(Stage stage) {
         this.stage = stage;
+
+        mutationVariantCB.valueProperty().addListener((observable, oldValue, newValue) -> {
+                swapMutationPercentTF.setDisable(!newValue.equals(MutationVariant.SWAP.toString()));
+        });
+
         setConfig(Configuration.getDefault());
     }
 
@@ -73,6 +80,7 @@ public class SettingsWindow {
         minMutationsTF.setText(String.valueOf(config.minMutations()));
         maxMutationsTF.setText(String.valueOf(config.maxMutations()));
         mutationVariantCB.setValue(config.mutationVariant().toString());
+        swapMutationPercentTF.setText(String.valueOf(config.swapMutationPercent()));
         genomeLengthTF.setText(String.valueOf(config.genomeLength()));
     }
 
@@ -90,6 +98,7 @@ public class SettingsWindow {
         int minMutations = Integer.parseInt(minMutationsTF.getText());
         int maxMutations = Integer.parseInt(maxMutationsTF.getText());
         MutationVariant mutationVariant = MutationVariant.fromString(mutationVariantCB.getValue());
+        int swapMutationPercent = Integer.parseInt(swapMutationPercentTF.getText());
         int genomeLength = Integer.parseInt(genomeLengthTF.getText());
 
         return new Configuration(
@@ -106,6 +115,7 @@ public class SettingsWindow {
                 minMutations,
                 maxMutations,
                 mutationVariant,
+                swapMutationPercent,
                 genomeLength
         );
     }
