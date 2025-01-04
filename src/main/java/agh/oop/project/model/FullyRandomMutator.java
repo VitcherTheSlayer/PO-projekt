@@ -29,7 +29,7 @@ public class FullyRandomMutator implements Mutator {
                 .stream()
                 .limit(n)
                 .toList()){
-            rawGenome.set(i, rng.nextInt(Genome.GENES_COUNT));
+            rawGenome.set(i, rng.nextInt(Genome.UNIQUE_GENES_COUNT));
         }
 
         return new Genome(rawGenome);

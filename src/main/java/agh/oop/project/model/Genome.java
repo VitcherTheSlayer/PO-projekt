@@ -24,19 +24,19 @@ public class Genome implements Iterable<Integer> {
         @Override
         public Integer next() {
             var result = genome.get(i);
-            i = (i + 1) % Genome.GENES_COUNT;
+            i = (i + 1) % Genome.UNIQUE_GENES_COUNT;
             return result;
         }
     }
 
-    public static final int GENES_COUNT = 8;
+    public static final int UNIQUE_GENES_COUNT = 8;
 
     private final ArrayList<Integer> values = new ArrayList<>();
 
     public Genome(int n) {
         var rng = new Random();
         for(int i = 0; i < n; i++) {
-            values.add(rng.nextInt(GENES_COUNT));
+            values.add(rng.nextInt(UNIQUE_GENES_COUNT));
         }
     }
 
@@ -56,6 +56,10 @@ public class Genome implements Iterable<Integer> {
             result.add(gene);
         }
         return result;
+    }
+
+    public int size() {
+        return values.size();
     }
 
     @Override
