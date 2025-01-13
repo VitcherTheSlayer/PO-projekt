@@ -24,7 +24,7 @@ public class Genome implements Iterable<Integer> {
         @Override
         public Integer next() {
             var result = genome.get(i);
-            i = (i + 1) % Genome.UNIQUE_GENES_COUNT;
+            i = (i + 1) % genome.size();
             return result;
         }
     }
