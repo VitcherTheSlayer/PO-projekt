@@ -8,19 +8,19 @@ public abstract class GenomeMovableEntity {
     protected Vector2d position;
     protected Rotation rotation;
 
-    public GenomeMovableEntity(Genome genome, Vector2d position) {
+    public GenomeMovableEntity(Genome genome, Vector2d position, Rotation rotation) {
         this.genome = genome;
         this.position = position;
         genomeIterator = this.genome.iterator();
     }
     // random
-    public GenomeMovableEntity(int genomeLength, Vector2d position) {
+    public GenomeMovableEntity(int genomeLength, Vector2d position, Rotation rotation) {
         genome = new Genome(genomeLength);
         this.position = position;
         genomeIterator = this.genome.iterator();
     }
 
-    public void move(MoveValidator moveValidator) {
+    public void move(IMoveValidator moveValidator) {
         rotation = rotation.add(genomeIterator.next());
 
         var nextMove = moveValidator.requestMove(this, position.add(rotation.nextMove()));
