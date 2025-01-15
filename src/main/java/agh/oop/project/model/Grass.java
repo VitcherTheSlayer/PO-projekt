@@ -1,6 +1,6 @@
 package agh.oop.project.model;
 
-public class Grass implements MapEntity{
+public class Grass implements IMapEntity {
     private final Vector2d position;
 
     public Grass(Vector2d position){
