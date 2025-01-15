@@ -84,10 +84,28 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     }
 
     public int descendantsCount() {
+        // dumb idea, allows for duplicates
+//        int count = 0;
+//        for(Animal child : children) {
+//            count += child.descendantsCount() + 1;
+//        }
+//        return count;
+
         int count = 0;
-        for(Animal child : children) {
-            count += child.descendantsCount() + 1;
+        Animal curr = null;
+
+        List<Animal> toProcess = new ArrayList<>(this.children);
+        Set<Animal> processed = new HashSet<>();
+
+        while (!toProcess.isEmpty()) {
+            curr = toProcess.removeLast();
+            if(!processed.contains(curr)) {
+                ++count;
+                toProcess.addAll(curr.children);
+                processed.add(curr);
+            }
         }
-        return count;
+
+        return count - 1;
     }
 }
