@@ -55,7 +55,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     }
 
     @Override
-    public void move(MoveValidator moveValidator) {
+    public void move(IMoveValidator moveValidator) {
         super.move(moveValidator);
         ++age;
     }
