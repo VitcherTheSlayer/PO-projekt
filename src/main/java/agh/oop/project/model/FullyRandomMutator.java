@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class FullyRandomMutator implements Mutator {
+public class FullyRandomMutator implements IMutator {
 
     protected final int minMutation;
     protected final int maxMutation;
