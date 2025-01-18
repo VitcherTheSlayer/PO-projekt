@@ -16,6 +16,11 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
         this.map = map;
     }
 
+    public Animal(Genome genome, Vector2d position, Rotation rotation, AbstractMap map, int energy) {
+        this(genome, position, rotation, map);
+        this.energy = energy;
+    }
+
     public Animal(int genomeLength, Vector2d position, Rotation rotation, AbstractMap map) {
         super(genomeLength, position, rotation);
         this.map = map;
@@ -44,9 +49,15 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
                                 other.energy
                         )
                 );
-        Rotation newRotation = Rotation.NORTH.add(new Random().nextInt(Genome.UNIQUE_GENES_COUNT));
+        Rotation newRotation = Rotation.get(new Random().nextInt(Genome.UNIQUE_GENES_COUNT));
 
-        return new Animal(newGenome, position, newRotation, map);
+        return new Animal(
+                newGenome,
+                position,
+                newRotation,
+                map,
+                2 * map.getConfiguration().reproductionEnergyUsage()
+        );
     }
 
     @Override

@@ -6,10 +6,25 @@ import java.util.List;
 import java.util.Random;
 
 public class FullyRandomMutator implements IMutator {
-
     protected final int minMutation;
     protected final int maxMutation;
     protected final Random rng = new Random();
+
+    protected List<Integer> makeRandomIdxs(int n) {
+        List<Integer> genesIdxs = new ArrayList<>();
+        for(int i = 0; i < n; i++){
+            genesIdxs.add(i);
+        }
+        Collections.shuffle(genesIdxs, rng);
+        return genesIdxs;
+    }
+
+    protected List<Integer> makeMutationIdxs(int maxIdx, int mutationCount) {
+        return makeRandomIdxs(maxIdx)
+                .stream()
+                .limit(mutationCount)
+                .toList();
+    }
 
     public FullyRandomMutator(int minMutation, int maxMutation) {
         this.maxMutation = maxMutation;
@@ -17,18 +32,9 @@ public class FullyRandomMutator implements IMutator {
     }
 
     protected Genome mutate(ArrayList<Integer> rawGenome){
-        final int n = rng.nextInt(minMutation, maxMutation + 1);
+        final int mutationCount = rng.nextInt(minMutation, maxMutation + 1);
 
-        List<Integer> genesIdxs = new ArrayList<>();
-        for(int i = 0; i < rawGenome.size(); i++){
-            genesIdxs.add(i);
-        }
-        Collections.shuffle(genesIdxs, rng);
-
-        for(int i : genesIdxs
-                .stream()
-                .limit(n)
-                .toList()){
+        for(int i : makeMutationIdxs(rawGenome.size(), mutationCount)){
             rawGenome.set(i, rng.nextInt(Genome.UNIQUE_GENES_COUNT));
         }
 

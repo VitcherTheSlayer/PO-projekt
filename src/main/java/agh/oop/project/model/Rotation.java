@@ -5,6 +5,7 @@ public enum Rotation {
     EAST(2, new Vector2d(1, 0)),
     SOUTH(4, new Vector2d(0, -1)),
     WEST(6, new Vector2d(-1, 0)),
+
     NORTHEAST(1, NORTH.nextMove().add(EAST.nextMove())),
     SOUTHEAST(3, SOUTH.nextMove().add(EAST.nextMove())),
     SOUTHWEST(5, SOUTH.nextMove().add(WEST.nextMove())),
@@ -18,7 +19,7 @@ public enum Rotation {
         this.nextMove = nextMove;
     }
 
-    public Rotation get(int n){
+    public static Rotation get(int n){
         n %= Genome.UNIQUE_GENES_COUNT;
         return switch (n) {
             case 0 -> NORTH;
