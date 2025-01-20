@@ -6,9 +6,33 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<AnchorPane  xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="SimulationWindow"
+            fx:controller="agh.oop.project.presenter.SimulationWindow"
             prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <!-- Siatka do wyświetlania symulacji -->
+        <GridPane fx:id="gridPane" layoutX="50.0" layoutY="50.0">
+            <!-- Możesz dodać kolumny i wiersze w trakcie inicjalizacji -->
+        </GridPane>
 
-</AnchorPane>
+        <!-- Przycisk pauzy -->
+        <ToggleButton fx:id="pauseButton" layoutX="50.0" layoutY="350.0" text="Pause" onAction="#onClickPause"/>
+
+        <!-- Przycisk wznawiania -->
+        <ToggleButton fx:id="resumeButton" layoutX="150.0" layoutY="350.0" text="Resume" onAction="#onClickPlay"/>
+
+        <!-- Przycisk wznawiania -->
+        <ToggleButton fx:id="startButton" layoutX="250.0" layoutY="350.0" text="START" onAction="#onClickStart"/>
+
+        <!-- Etykieta statusu symulacji -->
+        <Label fx:id="simulationStatusLabel" layoutX="250.0" layoutY="250.0" text="Simulation Running"/>
+
+        <!-- Statystyki -->
+        <Label fx:id="statisticsPresenter" layoutX="10.0" layoutY="50.0" text="Staty" />
+
+        <!-- Dane animala -->
+        <Label fx:id="selectedAnimalPresenter" layoutX="10.0" layoutY="100.0" text="Dane animala" />
+
+    </children>
+</AnchorPane >

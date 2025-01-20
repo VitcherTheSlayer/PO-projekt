@@ -4,14 +4,19 @@ import agh.oop.project.model.Configuration;
 import agh.oop.project.model.MapVariant;
 import agh.oop.project.model.MutationVariant;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -53,6 +58,9 @@ public class SettingsWindow {
 
     @FXML
     private Button readButton;
+
+    @FXML
+    private Button startSimulationButton;
 
     private Stage stage;
 
@@ -145,5 +153,22 @@ public class SettingsWindow {
         if(file != null){
             setConfig(Configuration.fromFile(file));
         }
+    }
+
+    @FXML
+    private void startSimulation() throws IOException {
+        System.out.println("start Symulacji");
+
+        // Logika startu
+        // Załaduj nową scenę symulacji
+        FXMLLoader simulationLoader = new FXMLLoader();
+        simulationLoader.setLocation(getClass().getClassLoader().getResource("SimulationWindow.fxml"));
+        AnchorPane simulationPane = simulationLoader.load();
+
+        // Utwórz nową scenę i przypisz ją do Stage
+        Scene simulationScene = new Scene(simulationPane);
+        stage.setScene(simulationScene);
+        stage.setTitle("Symulacja");
+
     }
 }

@@ -4,7 +4,7 @@ import java.util.*;
 
 public abstract class AbstractMap implements IMoveValidator {
     protected final Map<Vector2d, SortedSet<Animal>> animalsMap = new HashMap<>();
-    protected final Map<Vector2d, Grass> grassMap = new HashMap<>();
+    protected final Map<Vector2d, Grass> grassMap = new HashMap<>(); // Jak objekt grass ma w sobie wektor to tutaj niepotrzebnie kopiuje się
     protected final Configuration configuration;
     protected final IMutator mutator;
     protected final Boundary boundary;

@@ -8,6 +8,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
+import javax.swing.*;
 
 public class SimulationWindow {
     private static final int CELL_SIZE_MIN = 3;
@@ -24,11 +27,12 @@ public class SimulationWindow {
     private int showAxis = 0;
     private Node lastNode = null;
     private boolean animalsSelectable = false;
+    private Stage stage;
 
     @FXML
-    private StatisticsPresenter statisticsPresenter;
+    private Label statisticsPresenter; // Do poprawki, narazie prowizorycznie
     @FXML
-    private SelectedAnimalPresenter selectedAnimalPresenter;
+    private Label selectedAnimalPresenter; // Do poprawki, narazie prowizorycznie
 
     @FXML
     private GridPane gridPane;
@@ -37,21 +41,39 @@ public class SimulationWindow {
     @FXML
     private ToggleButton resumeButton;
     @FXML
+    private ToggleButton startButton;
+    @FXML
     private Label simulationStatusLabel;
 
     @FXML
     private void onClickPlay() {
-        resumeButton.setSelected(true);
-        pauseButton.setSelected(false);
+        if (!simulationRunning) {
+            resumeButton.setSelected(true);
+            pauseButton.setSelected(false);
+            System.out.println("simulation.resume();");
+            simulationRunning = true;
+//          simulation.resume();
+        }
 
-        simulation.resume();
     }
 
     @FXML
     private void onClickPause() {
-        pauseButton.setSelected(true);
-        resumeButton.setSelected(false);
+        if (simulationRunning) {
+            pauseButton.setSelected(true);
+            resumeButton.setSelected(false);
+            System.out.println("simulation.pause();");
+            simulationRunning = false;
+//          simulation.pause();
+        }
 
-        simulation.pause();
+    }
+
+    @FXML
+    private void onClickStart(){
+        if (!simulationRunning) {
+            System.out.println("Overall simulation start");
+            simulationRunning = true;
+        }
     }
 }

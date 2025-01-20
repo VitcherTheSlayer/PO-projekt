@@ -44,5 +44,6 @@
 
         <Button text="Save File" fx:id="saveButton" onAction="#save"/>
         <Button text="Read File" fx:id="readButton" onAction="#read"/>
+        <Button text="Start Simulation" fx:id="startSimulationButton" onAction="#startSimulation"/>
     </VBox>
 </AnchorPane>
