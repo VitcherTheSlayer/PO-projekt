@@ -1,5 +1,6 @@
 package agh.oop.project.presenter;
 
+import agh.oop.project.model.Configuration;
 import agh.oop.project.model.Rotation;
 import agh.oop.project.model.Simulation;
 import agh.oop.project.model.Vector2d;
@@ -75,5 +76,9 @@ public class SimulationWindow {
             System.out.println("Overall simulation start");
             simulationRunning = true;
         }
+    }
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
     }
 }

@@ -3,6 +3,8 @@ package agh.oop.project.presenter;
 import agh.oop.project.model.Configuration;
 import agh.oop.project.model.MapVariant;
 import agh.oop.project.model.MutationVariant;
+import agh.oop.project.model.Simulation;
+import agh.oop.project.presenter.SimulationWindow;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -159,7 +161,6 @@ public class SettingsWindow {
     private void startSimulation() throws IOException {
         System.out.println("start Symulacji");
 
-        // Logika startu
         // Załaduj nową scenę symulacji
         FXMLLoader simulationLoader = new FXMLLoader();
         simulationLoader.setLocation(getClass().getClassLoader().getResource("SimulationWindow.fxml"));
@@ -170,5 +171,6 @@ public class SettingsWindow {
         stage.setScene(simulationScene);
         stage.setTitle("Symulacja");
 
+        Simulation simulation = new Simulation(this.getConfig());
     }
 }
