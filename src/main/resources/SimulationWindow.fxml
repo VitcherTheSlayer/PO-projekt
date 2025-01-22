@@ -1,38 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
 
-<AnchorPane  xmlns="http://javafx.com/javafx"
+<AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="agh.oop.project.presenter.SimulationWindow"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="600.0" prefWidth="800.0">
+
     <children>
-        <!-- Siatka do wyświetlania symulacji -->
-        <GridPane fx:id="mapGrid" layoutX="50.0" layoutY="50.0" gridLinesVisible="true">
-            <!-- Możesz dodać kolumny i wiersze w trakcie inicjalizacji -->
-        </GridPane>
+        <!-- Główna siatka -->
+        <BorderPane prefWidth="800.0" prefHeight="600.0">
+            <!-- Statystyki po prawej stronie -->
+            <right>
+                <VBox spacing="10" alignment="TOP_LEFT">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10" />
+                    </padding>
+                    <children>
+                        <Label text="Statystyki:" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                        <Label fx:id="statisticsPresenter" text="Staty" />
+                        <Label text="Wybrany zwierzak:" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                        <Label fx:id="selectedAnimalPresenter" text="Dane animala" />
+                    </children>
+                </VBox>
+            </right>
 
-        <!-- Przycisk pauzy -->
-        <ToggleButton fx:id="pauseButton" layoutX="50.0" layoutY="350.0" text="Pause" onAction="#onClickPause"/>
+            <!-- Siatka symulacji na środku -->
+            <center>
+                <GridPane fx:id="mapGrid" gridLinesVisible="true"
+                          alignment="CENTER" maxHeight="500.0" maxWidth="500.0"
+                          style="-fx-border-color: black; -fx-border-width: 1;">
+                    <!-- Kolumny i wiersze są dynamicznie dodawane w kodzie -->
+                </GridPane>
+            </center>
 
-        <!-- Przycisk wznawiania -->
-        <ToggleButton fx:id="resumeButton" layoutX="150.0" layoutY="350.0" text="Resume" onAction="#onClickPlay"/>
+            <!-- Sekcja poniżej siatki -->
+            <bottom>
+                <VBox spacing="10" alignment="CENTER">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10" />
+                    </padding>
+                    <children>
+                        <!-- Status symulacji -->
+                        <Label fx:id="simulationStatusLabel" text="Simulation Status" style="-fx-font-size: 14;" />
 
-        <!-- Przycisk wznawiania -->
-        <ToggleButton fx:id="startButton" layoutX="250.0" layoutY="350.0" text="START" onAction="#onClickStart"/>
-
-        <!-- Etykieta statusu symulacji -->
-        <Label fx:id="simulationStatusLabel" layoutX="250.0" layoutY="250.0" text="Simulation Running"/>
-
-        <!-- Statystyki -->
-        <Label fx:id="statisticsPresenter" layoutX="10.0" layoutY="50.0" text="Staty" />
-
-        <!-- Dane animala -->
-        <Label fx:id="selectedAnimalPresenter" layoutX="10.0" layoutY="100.0" text="Dane animala" />
-
+                        <!-- Przycisk kontrolny -->
+                        <HBox spacing="10" alignment="CENTER">
+                            <children>
+                                <ToggleButton fx:id="pauseButton" text="Pause" onAction="#onClickPause" />
+                                <ToggleButton fx:id="resumeButton" text="Resume" onAction="#onClickPlay" />
+                                <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </bottom>
+        </BorderPane>
     </children>
-</AnchorPane >
+</AnchorPane>

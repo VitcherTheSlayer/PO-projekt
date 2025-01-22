@@ -170,6 +170,9 @@ public class SettingsWindow {
         Scene simulationScene = new Scene(simulationPane);
         stage.setScene(simulationScene);
         stage.setTitle("Symulacja");
+        stage.setMaximized(true);
+        stage.setResizable(false);
+        stage.centerOnScreen();
 
         SimulationWindow simulationWindow = simulationLoader.getController();
         simulationWindow.init(stage);

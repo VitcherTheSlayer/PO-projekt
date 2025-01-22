@@ -11,39 +11,73 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="agh.oop.project.presenter.SettingsWindow"
             prefHeight="800.0" prefWidth="600.0">
-    <VBox>
-        <TextField fx:id="heightTF" promptText="Height"/>
-        <TextField fx:id="widthTF" promptText="Width"/>
-        <ComboBox fx:id="mapVariantCB" promptText="Map Variant">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Globe"/>
-                    <String fx:value="Wild Owlbear"/>
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <TextField fx:id="initialPlantsTF" promptText="Initial Plants"/>
-        <TextField fx:id="energyPerPlantTF" promptText="Energy Per Plant"/>
-        <TextField fx:id="plantGrowthPerDayTF" promptText="Plant Growth Per Day"/>
-        <TextField fx:id="initialAnimalsTF" promptText="Initial Animals"/>
-        <TextField fx:id="initialEnergyTF" promptText="Initial Energy"/>
-        <TextField fx:id="reproductionMinEnergyTF" promptText="Reproduction Min Energy"/>
-        <TextField fx:id="reproductionEnergyUsageTF" promptText="Reproduction Energy Usage"/>
-        <TextField fx:id="minMutationsTF" promptText="Min Mutations"/>
-        <TextField fx:id="maxMutationsTF" promptText="Max Mutations"/>
-        <ComboBox fx:id="mutationVariantCB" promptText="Mutation Variant">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Full Randomness"/>
-                    <String fx:value="Swap"/>
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <TextField fx:id="swapMutationPercentTF" promptText="Swap Mutation Percent"/>
-        <TextField fx:id="genomeLengthTF" promptText="Genome Length"/>
+    <VBox spacing="20" alignment="TOP_CENTER" prefWidth="600.0" prefHeight="800.0">
+        <HBox spacing="20" alignment="TOP_CENTER">
+            <!-- Kolumna 1: Dane mapy -->
+            <VBox spacing="10" alignment="TOP_LEFT">
+                <Label text="Map Settings" style="-fx-font-weight: bold;" />
+                <Label text="Height of the Map (in units):" />
+                <TextField fx:id="heightTF" promptText="Height"/>
+                <Label text="Width of the Map (in units):" />
+                <TextField fx:id="widthTF" promptText="Width"/>
+                <Label text="Map Variant (choose one):" />
+                <ComboBox fx:id="mapVariantCB" promptText="Map Variant">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Globe"/>
+                            <String fx:value="Wild Owlbear"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
 
-        <Button text="Save File" fx:id="saveButton" onAction="#save"/>
-        <Button text="Read File" fx:id="readButton" onAction="#read"/>
-        <Button text="Start Simulation" fx:id="startSimulationButton" onAction="#startSimulation"/>
+            <!-- Kolumna 2: Dane symulacji (ilość elementów i energii) -->
+            <VBox spacing="10" alignment="TOP_LEFT">
+                <Label text="Simulation Data" style="-fx-font-weight: bold;" />
+                <Label text="Initial number of plants:" />
+                <TextField fx:id="initialPlantsTF" promptText="Initial Plants"/>
+                <Label text="Energy gained from a single plant:" />
+                <TextField fx:id="energyPerPlantTF" promptText="Energy Per Plant"/>
+                <Label text="Number of plants growing daily:" />
+                <TextField fx:id="plantGrowthPerDayTF" promptText="Plant Growth Per Day"/>
+                <Label text="Initial number of animals:" />
+                <TextField fx:id="initialAnimalsTF" promptText="Initial Animals"/>
+                <Label text="Initial energy of each animal:" />
+                <TextField fx:id="initialEnergyTF" promptText="Initial Energy"/>
+                <Label text="Minimum energy required for reproduction:" />
+                <TextField fx:id="reproductionMinEnergyTF" promptText="Reproduction Min Energy"/>
+                <Label text="Energy used during reproduction:" />
+                <TextField fx:id="reproductionEnergyUsageTF" promptText="Reproduction Energy Usage"/>
+            </VBox>
+
+            <!-- Kolumna 3: Dane związane z mutacjami i genomem -->
+            <VBox spacing="10" alignment="TOP_LEFT">
+                <Label text="Genetic Settings" style="-fx-font-weight: bold;" />
+                <Label text="Minimum number of mutations per animal:" />
+                <TextField fx:id="minMutationsTF" promptText="Min Mutations"/>
+                <Label text="Maximum number of mutations per animal:" />
+                <TextField fx:id="maxMutationsTF" promptText="Max Mutations"/>
+                <Label text="Mutation Variant (choose one):" />
+                <ComboBox fx:id="mutationVariantCB" promptText="Mutation Variant">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Full Randomness"/>
+                            <String fx:value="Swap"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Label text="Percentage of Swap mutations:" />
+                <TextField fx:id="swapMutationPercentTF" promptText="Swap Mutation Percent"/>
+                <Label text="Genome length of each animal:" />
+                <TextField fx:id="genomeLengthTF" promptText="Genome Length"/>
+            </VBox>
+        </HBox>
+
+        <!-- Przycisk akcji (pod wszystkimi kolumnami na środku) -->
+        <HBox spacing="20" alignment="CENTER">
+            <Button text="Save File" fx:id="saveButton" onAction="#save"/>
+            <Button text="Read File" fx:id="readButton" onAction="#read"/>
+            <Button text="Start Simulation" fx:id="startSimulationButton" onAction="#startSimulation"/>
+        </HBox>
     </VBox>
 </AnchorPane>
