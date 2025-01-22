@@ -41,7 +41,6 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     public void addAnimal(Animal animal) {
         assureSetFor(animal.getPosition()).add(animal);
         animalOccupiedPositions.add(animal.getPosition());
-        notifyObservers("Place Animal");
     }
 
     public void removeAnimal(Animal animal) {
@@ -146,7 +145,8 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected SortedSet<Animal> assureSetFor(Vector2d position) {
         SortedSet<Animal> animals = animalsMap.get(position);
         if (animals == null) {
-            return animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+            animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+            return animalsMap.get(position);
         }
         return animals;
     }
@@ -170,7 +170,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
             if (len > 0) {
                 return 1;
             }
-            } else {
+        } else {
             if (grassMap.containsKey(position)){
                 return 2;
             }

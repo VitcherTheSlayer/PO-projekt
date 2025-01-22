@@ -1,5 +1,7 @@
 package agh.oop.project.model;
 
+import agh.oop.project.presenter.SimulationWindow;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,11 +12,16 @@ public class Simulation {
     private final List<Animal> animals = new ArrayList<>();
     private static final Vector2d VECTORZERO =  new Vector2d(0,0);
     private static AbstractMap map;
+    private SimulationWindow window;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
         AbstractMap map = new GlobeMap(configuration);
         Simulation.map = map;
+    }
+
+    public void setSimulationWindow(SimulationWindow window){
+        this.window = window;
     }
 
     public AbstractMap getMap() {
@@ -27,59 +34,26 @@ public class Simulation {
 
     public void createMapElements(){
 
-        // Tworze randomowo rośliny
         Random rng = new Random();
-        List<Vector2d> preferedAreas = map.getPreferedAreas();
-        List<Vector2d> norPreferedAreas = map.getNotPreferedAreas();
-        Collections.shuffle(preferedAreas);
-        Collections.shuffle(norPreferedAreas);
 
-        for (int plantNr = 0; plantNr < configuration.initialPlants(); plantNr++){
-            if (preferedAreas.isEmpty() && norPreferedAreas.isEmpty()) {
-                throw new IllegalStateException("Nie ma wystarczającej liczby unikalnych miejsc dla wszystkich roślin.");
-            }
-
-            int chance = rng.nextInt(100);
-            Vector2d randomPlace;
-            if (chance < 80 && !preferedAreas.isEmpty()) {
-                randomPlace = preferedAreas.removeFirst();
-            } else {
-                randomPlace = norPreferedAreas.removeFirst();
-            }
-
-            Grass grass = new Grass(randomPlace);
-            map.placeGrass(grass);
-        }
-
-        List<Vector2d> allAreas = new ArrayList<>();
-        allAreas.addAll(preferedAreas);
-        allAreas.addAll(norPreferedAreas);
-        Collections.shuffle(allAreas);
+        map.growInitialGrass();
 
         // Tworze randomowo  zwierzęta
-        for (int animalNr = 0; animalNr <configuration.initialAnimals(); animalNr++){
-            if (allAreas.isEmpty()) {
-                throw new IllegalStateException("Nie ma wystarczającej liczby unikalnych miejsc dla wszystkich zwierząt.");
-            }
-            Vector2d randomPlace = allAreas.removeFirst();
-            int genomeLenght = configuration.genomeLength();
-            int dir = rng.nextInt(0,7);
-            Rotation rot = Rotation.get(dir);
-            Animal animal = new Animal(genomeLenght,randomPlace,rot,map);
+        for (int animalNr = 0; animalNr < configuration.initialAnimals(); animalNr++){
+            Vector2d randomPlace = new Vector2d(rng.nextInt(configuration.width()), rng.nextInt(configuration.height()));
+            Rotation rot = Rotation.get(rng.nextInt(Genome.UNIQUE_GENES_COUNT));
+            Animal animal = new Animal(configuration.genomeLength(), randomPlace, rot, map);
             animals.add(animal);
-            map.placeAnimal(animal);
+            map.addAnimal(animal);
         }
     }
 
     public void run(){
         int day = 1;
-        while (day < 5) {
+        while (day < 50) {
             // Tutaj jakaś logia zmiany dnia czy coś
-            for (Animal animal : animals) {
-                Vector2d oldPosition = animal.getPosition();
-                animal.move(map);
-                map.move(animal,oldPosition);
-            }
+            map.moveAnimals();
+            window.mapChanged();
 
             try {
                 Thread.sleep(1000);

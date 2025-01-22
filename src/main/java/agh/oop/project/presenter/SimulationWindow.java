@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.util.List;
 
-public class SimulationWindow implements MapChangeListener{
+public class SimulationWindow {
     private static final int CELL_SIZE_MIN = 3;
     private static final int CELL_SIZE_MAX = 50;
     private static final int MAX_AXES_CELL_SIZE = 13;
@@ -90,6 +90,7 @@ public class SimulationWindow implements MapChangeListener{
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
+        this.simulation.setSimulationWindow(this);
     }
 
     public void init(Stage stage) {
@@ -98,7 +99,7 @@ public class SimulationWindow implements MapChangeListener{
 
     public void setWorldMap(AbstractMap map){
         this.worldMap = map;
-        map.addObserver(this);
+        //map.addObserver(this);
         drawMap(); // Rysowanie mapy zaraz po ustawieniu
     }
 
@@ -174,8 +175,7 @@ public class SimulationWindow implements MapChangeListener{
         mapGrid.getRowConstraints().clear();
     }
 
-    @Override
-    public void mapChanged(AbstractMap worldMap, String message) {
+    public void mapChanged() {
         Platform.runLater(this::drawMap);
     }
 
