@@ -30,6 +30,5 @@ public class GlobeMap extends AbstractMap {
 
     @Override
     public void mapChanged(AbstractMap worldMap, String message) {
-        System.out.println("Zauważyłem ez");
     }
 }

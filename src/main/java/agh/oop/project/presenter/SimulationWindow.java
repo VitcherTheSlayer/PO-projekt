@@ -81,10 +81,9 @@ public class SimulationWindow implements MapChangeListener{
         if (!simulationRunning) {
             simulationRunning = true;
             Thread simulationThread = new Thread(() -> {
-                System.out.println("Overall simulation start");
-                simulation.run(); // Uruchom symulację w osobnym wątku
+                simulation.run();
             });
-            simulationThread.setDaemon(true); // Wątek zakończy się razem z aplikacją
+            simulationThread.setDaemon(true);
             simulationThread.start();
         }
     }
@@ -98,13 +97,9 @@ public class SimulationWindow implements MapChangeListener{
     }
 
     public void setWorldMap(AbstractMap map){
-        System.out.println("Dodaje obserwatora");
         this.worldMap = map;
-        System.out.println("Dodaje obserwatora 1");
         map.addObserver(this);
-        System.out.println("Dodaje obserwatora 2");
         drawMap(); // Rysowanie mapy zaraz po ustawieniu
-        System.out.println("Dodaje obserwatora 3");
     }
 
 
@@ -156,7 +151,6 @@ public class SimulationWindow implements MapChangeListener{
                     Label objectLabel = new Label("X");  // Możesz zmienić "X" na dowolny znak, np. ">", "*"
                     if ((int) object == 1) {
                         objectLabel.setText("+");
-                        System.out.println("Draw detected at" + x + " " + y);
                     } else if ((int) object == 2) {
                         objectLabel.setText("*");
                     }
@@ -182,10 +176,7 @@ public class SimulationWindow implements MapChangeListener{
 
     @Override
     public void mapChanged(AbstractMap worldMap, String message) {
-        System.out.println("Rysuje " + message);
-        Platform.runLater(() -> {
-            drawMap(); // Operacje na GUI muszą być w runLater
-        });
+        Platform.runLater(this::drawMap);
     }
 
 }

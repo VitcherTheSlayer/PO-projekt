@@ -15,7 +15,6 @@ public class Simulation {
         this.configuration = configuration;
         AbstractMap map = new GlobeMap(configuration);
         Simulation.map = map;
-//        createMapElements();
     }
 
     public AbstractMap getMap() {
@@ -77,18 +76,15 @@ public class Simulation {
         while (day < 5) {
             // Tutaj jakaś logia zmiany dnia czy coś
             for (Animal animal : animals) {
-                System.out.println("ruch "+day);
-                System.out.println("anima prev pos" + animal.getPosition());
                 Vector2d oldPosition = animal.getPosition();
                 animal.move(map);
-                System.out.println("animal new pos" + animal.getPosition());
                 map.move(animal,oldPosition);
             }
 
             try {
-                Thread.sleep(1000);  // Zatrzymuje wykonanie na 1000 milisekund (czyli 1 sekundę)
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();  // Obsługuje przerwanie wątku, jeśli wystąpi
+                e.printStackTrace();
             }
 
 
