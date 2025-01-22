@@ -2,7 +2,7 @@ package agh.oop.project.model;
 
 import java.util.*;
 
-public abstract class AbstractMap implements IMoveValidator {
+public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected final Map<Vector2d, SortedSet<Animal>> animalsMap = new HashMap<>();
     protected final Map<Vector2d, Grass> grassMap = new HashMap<>(); // Jak objekt grass ma w sobie wektor to tutaj niepotrzebnie kopiuje się
     protected final Configuration configuration;
@@ -14,6 +14,7 @@ public abstract class AbstractMap implements IMoveValidator {
     private final Vector2d jungleUpperRight;
     private final int height;
     private final int width;
+    private final List<MapChangeListener> observers = new ArrayList<>();
 
     protected AbstractMap(Configuration configuration) {
         this.configuration = configuration;
@@ -73,10 +74,62 @@ public abstract class AbstractMap implements IMoveValidator {
     public void placeAnimal (Animal animal) {
         makeSetFor(animal.getPosition());
         animalsMap.get(animal.getPosition()).add(animal);
+        notifyObservers("Place Animal");
+        System.out.println("Place Animal" + animal.getPosition());
     }
 
     public void placeGrass (Grass grass) {
         grassMap.put(grass.getPosition(), grass);
+        notifyObservers("Place Grass");
+        System.out.println("Place Grass " + grass.getPosition() );
     }
+
+    public int objectAt(Vector2d position) { // Prowizorka, sprawdzam czy coś jest wgl
+        SortedSet<Animal> animalsAtPosition = animalsMap.get(position);
+        if (animalsAtPosition != null) {
+            int len = animalsMap.get(position).size();
+            if (len > 0) {
+                return 1;
+            }
+            } else {
+            if (grassMap.containsKey(position)){
+                return 2;
+            }
+        }
+
+        return 3;
+    }
+
+    public void addObserver(MapChangeListener observer){
+        observers.add(observer);
+    }
+
+    public void notifyObservers(String message) {
+        for (MapChangeListener observer : observers) {
+            observer.mapChanged(this, message);
+        }
+    }
+
+    public void move(Animal animal,Vector2d oldPosition) {
+        SortedSet<Animal> animalsAtOldPosition = animalsMap.get(oldPosition);
+
+        if (animalsAtOldPosition != null) {
+
+            animalsAtOldPosition.remove(animal);
+
+            if (animalsAtOldPosition.isEmpty()) {
+                animalsMap.remove(oldPosition);
+            }
+        }
+
+        Vector2d newPosition = animal.getPosition(); // Nowa pozycja już ustawiona w Animal
+        makeSetFor(newPosition);  // Upewnienie się, że istnieje zestaw
+        SortedSet<Animal> animalsAtNewPosition = animalsMap.get(newPosition);
+        boolean added = animalsAtNewPosition.add(animal);
+
+        notifyObservers("Moved");
+        System.out.println("Move Animal to " + newPosition);
+    }
+
 
 }

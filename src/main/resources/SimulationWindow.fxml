@@ -12,7 +12,7 @@
             prefHeight="400.0" prefWidth="600.0">
     <children>
         <!-- Siatka do wyświetlania symulacji -->
-        <GridPane fx:id="gridPane" layoutX="50.0" layoutY="50.0">
+        <GridPane fx:id="mapGrid" layoutX="50.0" layoutY="50.0" gridLinesVisible="true">
             <!-- Możesz dodać kolumny i wiersze w trakcie inicjalizacji -->
         </GridPane>
 

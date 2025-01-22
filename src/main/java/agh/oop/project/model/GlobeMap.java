@@ -2,6 +2,8 @@ package agh.oop.project.model;
 
 import javafx.util.Pair;
 
+import java.util.List;
+
 public class GlobeMap extends AbstractMap {
     protected GlobeMap(Configuration configuration) {
         super(configuration);
@@ -24,5 +26,10 @@ public class GlobeMap extends AbstractMap {
         }
 
         return new Pair<>(new Vector2d(newX, newY), newRotation);
+    }
+
+    @Override
+    public void mapChanged(AbstractMap worldMap, String message) {
+        System.out.println("Zauważyłem ez");
     }
 }

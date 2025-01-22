@@ -171,6 +171,17 @@ public class SettingsWindow {
         stage.setScene(simulationScene);
         stage.setTitle("Symulacja");
 
+        SimulationWindow simulationWindow = simulationLoader.getController();
+        simulationWindow.init(stage);
+        System.out.println("jestem1");
         Simulation simulation = new Simulation(this.getConfig());
+        System.out.println("jestem2");
+        simulationWindow.setSimulation(simulation);
+        System.out.println("jestem3");
+        simulationWindow.setWorldMap(simulation.getMap());
+        System.out.println("jestem4");
+        simulation.createMapElements();
+        System.out.println("jestem5");
+//        simulation.run();
     }
 }
