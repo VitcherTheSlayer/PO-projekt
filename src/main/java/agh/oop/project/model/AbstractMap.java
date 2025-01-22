@@ -1,50 +1,154 @@
 package agh.oop.project.model;
 
+import agh.oop.project.model.util.RandomPositionGenerator;
+
 import java.util.*;
 
 public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected final Map<Vector2d, SortedSet<Animal>> animalsMap = new HashMap<>();
-    protected final Map<Vector2d, Grass> grassMap = new HashMap<>(); // Jak objekt grass ma w sobie wektor to tutaj niepotrzebnie kopiuje się
+    protected final Set<Vector2d> animalOccupiedPositions = new HashSet<>();
+    protected final Map<Vector2d, Grass> grassMap = new HashMap<>();
     protected final Configuration configuration;
     protected final IMutator mutator;
     protected final Boundary boundary;
-    private final List<Vector2d> preferedAreas = new ArrayList<>();
-    private final List<Vector2d> notPreferedAreas = new ArrayList<>();
-    private final Vector2d jungleLowerLeft;
-    private final Vector2d jungleUpperRight;
-    private final int height;
-    private final int width;
-    private final List<MapChangeListener> observers = new ArrayList<>();
+    protected final Vector2d equatorDelta;
+    protected final Boundary equator;
+    protected final int equatorThickness;
+    protected static final int EQUATOR_AREA_PERCENT = 20;
+    protected static final int EQUATOR_GROWTH_PERCENT = 80;
+    private final UUID uuid = UUID.randomUUID();
 
     protected AbstractMap(Configuration configuration) {
         this.configuration = configuration;
         this.mutator = switch (configuration.mutationVariant()) {
-            case SWAP -> new SwapMutator(configuration.minMutations(), configuration.maxMutations(), configuration.swapMutationPercent());
+            case SWAP -> new SwapMutator(
+                    configuration.minMutations(),
+                    configuration.maxMutations(),
+                    configuration.swapMutationPercent()
+            );
             case FULL_RANDOMNESS -> new FullyRandomMutator(configuration.minMutations(), configuration.maxMutations());
         };
-        this.width = configuration.width();
-        this.height = configuration.height();
-        this.boundary = new Boundary(new Vector2d(0, 0), new Vector2d(this.width,this.height));
+        this.boundary = new Boundary(
+                new Vector2d(0, 0),
+                new Vector2d(configuration.width(), configuration.height())
+        );
 
-        this.jungleLowerLeft = new Vector2d((int) (this.width * 0.27),(int) (this.height * 0.27));
-        this.jungleUpperRight = new Vector2d((int) (this.width * 0.73),(int) (this.height * 0.73));
+        equatorThickness = configuration.height() * EQUATOR_AREA_PERCENT / 100;
+        equatorDelta = new Vector2d(0, (configuration.height() - equatorThickness) / 2);
+        equator = new Boundary(equatorDelta, equatorDelta.add(new Vector2d(configuration.width(), equatorThickness - 1)));
+    }
 
-        List<Vector2d> possiblePositions = new ArrayList<>();
+    public void addAnimal(Animal animal) {
+        assureSetFor(animal.getPosition()).add(animal);
+        animalOccupiedPositions.add(animal.getPosition());
+        notifyObservers("Place Animal");
+    }
 
-        for (int x = 0; x < configuration.width(); x++) {
-            for (int y = 0; y < configuration.height(); y++) {
-                Vector2d position = new Vector2d(x, y);
-                if (isWithinJungle(position)) {
-                    preferedAreas.add(position);  // Pozycja w dżungli
-                } else {
-                    notPreferedAreas.add(position);  // Pozycja poza dżunglą
+    public void removeAnimal(Animal animal) {
+        SortedSet<Animal> animals = assureSetFor(animal.getPosition());
+        animals.remove(animal);
+        if(animals.isEmpty()) {
+            animalOccupiedPositions.remove(animal.getPosition());
+        }
+    }
+
+    public List<Animal> getAnimals() {
+        return animalsMap
+                .values()
+                .stream()
+                //.map(set -> set.stream().toList())
+                .flatMap(SortedSet::stream)
+                .toList();
+    }
+
+    public void moveAnimal(Animal animal) {
+        removeAnimal(animal);
+        Vector2d newPos = animal.move(this);
+        addAnimal(animal);
+    }
+
+    public void moveAnimals() {
+        for(Animal animal : getAnimals()) {
+            moveAnimal(animal);
+        }
+    }
+
+    public Animal getFirstAnimalAt(Vector2d position) {
+        SortedSet<Animal> animals = assureSetFor(position);
+        if(animals.isEmpty()) {
+            return null;
+        }
+        return animals.getFirst();
+    }
+
+    public void feast() {
+        for(Vector2d occupiedPos : animalOccupiedPositions) {
+            if(grassMap.containsKey(occupiedPos)) {
+                grassMap.remove(occupiedPos);
+                assureSetFor(occupiedPos).getFirst().eatGrass();
+            }
+        }
+    }
+
+    public void breed() {
+        for(Vector2d pos : animalOccupiedPositions) {
+            SortedSet<Animal> currentSet = assureSetFor(pos);
+            if(currentSet.size() >= 2){
+                var it = currentSet.iterator();
+                Animal first = it.next();
+                Animal second = it.next();
+                if(second.breedable()){
+                    addAnimal(first.breedWith(second));
                 }
             }
         }
     }
 
-    protected void makeSetFor(Vector2d position) {
-        animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+    protected void growGrass(int count) {
+        // "... Istnieje 80% szansy, że nowa roślina wyrośnie na preferowanym polu,
+        //  a tylko 20% szans, że wyrośnie na polu drugiej kategorii ..."
+
+        int equatorGrassCount = count * EQUATOR_GROWTH_PERCENT / 100;
+        int otherGrassCount = count - equatorGrassCount;
+
+        RandomPositionGenerator equatorGenerator = new RandomPositionGenerator(
+                configuration.width(),
+                equatorThickness,
+                equatorGrassCount,
+                grassMap.keySet()::contains
+        );
+
+        RandomPositionGenerator otherGenerator = new RandomPositionGenerator(
+                configuration.width(),
+                configuration.height(),
+                otherGrassCount,
+                pos -> equator.test(pos) || grassMap.containsKey(pos)
+        );
+
+        for(Vector2d pos : equatorGenerator){
+            grassMap.put(pos.add(equatorDelta), new Grass(pos));
+        }
+        for(Vector2d pos : otherGenerator){
+            grassMap.put(pos, new Grass(pos));
+        }
+    }
+
+    public void growInitialGrass() {
+        growGrass(configuration.initialPlants());
+    }
+
+    public void dailyGrassGrowth(){
+        growGrass(configuration.plantGrowthPerDay());
+    }
+
+    public void beforeEatUpdate(){}
+
+    protected SortedSet<Animal> assureSetFor(Vector2d position) {
+        SortedSet<Animal> animals = animalsMap.get(position);
+        if (animals == null) {
+            return animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+        }
+        return animals;
     }
 
     Configuration getConfiguration(){
@@ -57,29 +161,6 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
     public Boundary getBoundary() {
         return new Boundary(boundary.lowerLeft(), boundary.upperRight());
-    }
-
-    public List<Vector2d> getPreferedAreas() {
-        return preferedAreas;
-    }
-
-    public List<Vector2d> getNotPreferedAreas() {
-        return notPreferedAreas;
-    }
-
-    private boolean isWithinJungle (Vector2d position) {
-        return position.precedes(jungleUpperRight) && position.follows(jungleLowerLeft);
-    }
-
-    public void placeAnimal (Animal animal) {
-        makeSetFor(animal.getPosition());
-        animalsMap.get(animal.getPosition()).add(animal);
-        notifyObservers("Place Animal");
-    }
-
-    public void placeGrass (Grass grass) {
-        grassMap.put(grass.getPosition(), grass);
-        notifyObservers("Place Grass");
     }
 
     public int objectAt(Vector2d position) { // Prowizorka, sprawdzam czy coś jest wgl
@@ -97,34 +178,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         return 3;
     }
-
-    public void addObserver(MapChangeListener observer){
-        observers.add(observer);
+    public UUID getId() {
+        return uuid;
     }
-
-    public void notifyObservers(String message) {
-        for (MapChangeListener observer : observers) {
-            observer.mapChanged(this, message);
-        }
-    }
-
-    public void move(Animal animal,Vector2d oldPosition) {
-        SortedSet<Animal> animalsAtOldPosition = animalsMap.get(oldPosition);
-
-        if (animalsAtOldPosition != null) {
-            animalsAtOldPosition.remove(animal);
-            if (animalsAtOldPosition.isEmpty()) {
-                animalsMap.remove(oldPosition);
-            }
-        }
-
-        Vector2d newPosition = animal.getPosition(); // Nowa pozycja już ustawiona w Animal
-        makeSetFor(newPosition);  // Upewnienie się, że istnieje zestaw
-        SortedSet<Animal> animalsAtNewPosition = animalsMap.get(newPosition);
-        animalsAtNewPosition.add(animal);
-
-        notifyObservers("Moved");
-    }
-
-
 }

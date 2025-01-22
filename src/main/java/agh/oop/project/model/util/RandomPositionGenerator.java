@@ -2,14 +2,12 @@ package agh.oop.project.model.util;
 
 import agh.oop.project.model.Vector2d;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class RandomPositionGenerator implements Iterable<Vector2d> {
-    private static class Iterator implements java.util.Iterator<Vector2d>{
-        private final RandomPositionGenerator parent;
+    private class Iterator implements java.util.Iterator<Vector2d>{
+        private RandomPositionGenerator parent;
 
         public Iterator(RandomPositionGenerator parent){
             this.parent = parent;
@@ -26,12 +24,16 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         }
     }
 
-    private final List<Vector2d> positions = new ArrayList<>();
-    private final int size;
+    private List<Vector2d> positions = new ArrayList<>();
+    private int size;
     private int count = 0;
-    private final Random random = new Random();
+    private Random random = new Random();
 
     public RandomPositionGenerator(int maxWidth, int maxHeight, int count){
+        this(maxWidth, maxHeight, count, null);
+    }
+
+    public RandomPositionGenerator(int maxWidth, int maxHeight, int count, Predicate<Vector2d> exclusionPredicate){
         if(count > (maxHeight + 1) * (maxWidth + 1)){
             throw new IllegalArgumentException();
         }
@@ -40,7 +42,12 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
 
         for(int y = 0; y <= maxHeight; ++y){
             for(int x = 0; x <= maxWidth; ++x){
-                positions.add(new Vector2d(x, y));
+                if(exclusionPredicate != null && !exclusionPredicate.test(new Vector2d(x, y))){
+                    positions.add(new Vector2d(x, y));
+                }
+                else if(exclusionPredicate == null){
+                    positions.add(new Vector2d(x, y));
+                }
             }
         }
     }
@@ -66,6 +73,7 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         // [0][1][7][6][4][5]|[3][2]
         //           ^- idx    ^- return
         Collections.swap(positions, idx, positions.size() - count);
+
         return positions.get(positions.size() - count);
     }
 

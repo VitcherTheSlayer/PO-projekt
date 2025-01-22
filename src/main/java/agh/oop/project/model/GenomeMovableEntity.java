@@ -22,11 +22,13 @@ public abstract class GenomeMovableEntity {
         genomeIterator = this.genome.iterator();
     }
 
-    public void move(IMoveValidator moveValidator) {
+    public Vector2d move(IMoveValidator moveValidator) {
         rotation = rotation.add(genomeIterator.next());
         var nextMove = moveValidator.requestMove(this, position.add(rotation.nextMove()));
         position = nextMove.getKey();
         rotation = nextMove.getValue();
+
+        return position;
     }
 
     public Rotation getRotation() {

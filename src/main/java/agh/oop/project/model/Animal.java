@@ -62,13 +62,34 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
 
     @Override
     public int compareTo(Animal o) {
-        return energy - o.energy;
+        // ordered by:
+        // 1. more energetic
+        // 2. older
+        // 3. child count
+        // 4. random
+
+        int energyDiff = o.energy - energy;
+        if(energyDiff != 0) {
+            return energyDiff;
+        }
+
+        int ageDiff = o.age - age;
+        if(ageDiff != 0) {
+            return ageDiff;
+        }
+
+        int childrenDiff = o.children.size() - children.size();
+        if(childrenDiff != 0) {
+            return childrenDiff;
+        }
+
+        return new Random().nextBoolean() ? 1 : -1;
     }
 
     @Override
-    public void move(IMoveValidator moveValidator) {
-        super.move(moveValidator);
+    public Vector2d move(IMoveValidator moveValidator) {
         ++age;
+        return super.move(moveValidator);
     }
 
     public void eatGrass(){
