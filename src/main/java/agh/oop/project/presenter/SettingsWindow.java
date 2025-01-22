@@ -3,15 +3,22 @@ package agh.oop.project.presenter;
 import agh.oop.project.model.Configuration;
 import agh.oop.project.model.MapVariant;
 import agh.oop.project.model.MutationVariant;
+import agh.oop.project.model.Simulation;
+import agh.oop.project.presenter.SimulationWindow;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -53,6 +60,9 @@ public class SettingsWindow {
 
     @FXML
     private Button readButton;
+
+    @FXML
+    private Button startSimulationButton;
 
     private Stage stage;
 
@@ -145,5 +155,30 @@ public class SettingsWindow {
         if(file != null){
             setConfig(Configuration.fromFile(file));
         }
+    }
+
+    @FXML
+    private void startSimulation() throws IOException {
+        System.out.println("start Symulacji");
+
+        // Załaduj nową scenę symulacji
+        FXMLLoader simulationLoader = new FXMLLoader();
+        simulationLoader.setLocation(getClass().getClassLoader().getResource("SimulationWindow.fxml"));
+        AnchorPane simulationPane = simulationLoader.load();
+
+        // Utwórz nową scenę i przypisz ją do Stage
+        Scene simulationScene = new Scene(simulationPane);
+        stage.setScene(simulationScene);
+        stage.setTitle("Symulacja");
+        stage.setMaximized(true);
+        stage.setResizable(false);
+        stage.centerOnScreen();
+
+        SimulationWindow simulationWindow = simulationLoader.getController();
+        simulationWindow.init(stage);
+        Simulation simulation = new Simulation(this.getConfig());
+        simulationWindow.setSimulation(simulation);
+        simulationWindow.setWorldMap(simulation.getMap());
+        simulation.createMapElements();
     }
 }

@@ -4,19 +4,19 @@ import agh.oop.project.model.util.RandomPositionGenerator;
 
 import java.util.*;
 
-public abstract class AbstractMap implements IMoveValidator {
+public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected final Map<Vector2d, SortedSet<Animal>> animalsMap = new HashMap<>();
     protected final Set<Vector2d> animalOccupiedPositions = new HashSet<>();
     protected final Map<Vector2d, Grass> grassMap = new HashMap<>();
     protected final Configuration configuration;
     protected final IMutator mutator;
     protected final Boundary boundary;
-    private final UUID uuid = UUID.randomUUID();
     protected final Vector2d equatorDelta;
     protected final Boundary equator;
     protected final int equatorThickness;
     protected static final int EQUATOR_AREA_PERCENT = 20;
     protected static final int EQUATOR_GROWTH_PERCENT = 80;
+    private final UUID uuid = UUID.randomUUID();
 
     protected AbstractMap(Configuration configuration) {
         this.configuration = configuration;
@@ -145,7 +145,8 @@ public abstract class AbstractMap implements IMoveValidator {
     protected SortedSet<Animal> assureSetFor(Vector2d position) {
         SortedSet<Animal> animals = animalsMap.get(position);
         if (animals == null) {
-            return animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+            animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+            return animalsMap.get(position);
         }
         return animals;
     }
@@ -162,6 +163,21 @@ public abstract class AbstractMap implements IMoveValidator {
         return new Boundary(boundary.lowerLeft(), boundary.upperRight());
     }
 
+    public int objectAt(Vector2d position) { // Prowizorka, sprawdzam czy coś jest wgl
+        SortedSet<Animal> animalsAtPosition = animalsMap.get(position);
+        if (animalsAtPosition != null) {
+            int len = animalsMap.get(position).size();
+            if (len > 0) {
+                return 1;
+            }
+        } else {
+            if (grassMap.containsKey(position)){
+                return 2;
+            }
+        }
+
+        return 3;
+    }
     public UUID getId() {
         return uuid;
     }
