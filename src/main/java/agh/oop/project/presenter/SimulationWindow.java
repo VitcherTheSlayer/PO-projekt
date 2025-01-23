@@ -147,7 +147,7 @@ public class SimulationWindow {
                 Vector2d position = new Vector2d(x, y);
                 Object object = worldMap.objectAt(position);
 
-                if (object != null && (int) object != 3) {
+                if ((int) object != 3) {
                     // Dodaj znaczek (Label) na pozycji, gdzie wykryto obiekt
                     Label objectLabel = new Label("X");  // Możesz zmienić "X" na dowolny znak, np. ">", "*"
                     if ((int) object == 1) {

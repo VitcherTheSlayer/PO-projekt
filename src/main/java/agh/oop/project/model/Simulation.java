@@ -52,7 +52,7 @@ public class Simulation {
         int day = 1;
         while (day < 50) {
             // Tutaj jakaś logia zmiany dnia czy coś
-            map.moveAnimals();
+            dailyCycle();
             window.mapChanged();
 
             try {
@@ -64,5 +64,12 @@ public class Simulation {
 
             day++;
         }
+    }
+
+    private void dailyCycle() {
+        map.growGrass(configuration.plantGrowthPerDay());
+        map.moveAnimals();
+        map.feast();
+        map.breed();
     }
 }
