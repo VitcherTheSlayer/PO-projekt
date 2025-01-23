@@ -85,4 +85,12 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
     public java.util.Iterator<Vector2d> iterator() {
         return new Iterator(this);
     }
+
+    public static Vector2d getRandomPosition(int maxWidth, int maxHeight) {
+        Random random = new Random();
+        int x = random.nextInt(maxWidth + 1);
+        int y = random.nextInt(maxHeight + 1);
+        return new Vector2d(x, y);
+    }
+
 }

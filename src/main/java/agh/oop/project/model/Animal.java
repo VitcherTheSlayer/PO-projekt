@@ -140,4 +140,6 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
 
         return count - 1;
     }
+
+    public void kill(){}
 }
