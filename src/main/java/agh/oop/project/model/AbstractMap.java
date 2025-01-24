@@ -110,25 +110,56 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         int equatorGrassCount = count * EQUATOR_GROWTH_PERCENT / 100;
         int otherGrassCount = count - equatorGrassCount;
 
-        RandomPositionGenerator equatorGenerator = new RandomPositionGenerator(
-                configuration.width(),
-                equatorThickness,
-                equatorGrassCount,
-                grassMap.keySet()::contains
-        );
-
-        RandomPositionGenerator otherGenerator = new RandomPositionGenerator(
-                configuration.width(),
-                configuration.height(),
-                otherGrassCount,
-                pos -> equator.test(pos) || grassMap.containsKey(pos)
-        );
-
-        for(Vector2d pos : equatorGenerator){
-            grassMap.put(pos.add(equatorDelta), new Grass(pos));
+        // Zbieram wolne miejsca na równiku
+        List<Vector2d> freeEquatorPositions = new ArrayList<>();
+        for (int x = 0; x < configuration.width(); x++) {
+            for (int y = equatorDelta.getY(); y < equatorDelta.getY() + equatorThickness; y++) {
+                Vector2d position = new Vector2d(x, y);
+                if (!grassMap.containsKey(position) && !animalOccupiedPositions.contains(position)) {
+                    freeEquatorPositions.add(position);
+                }
+            }
         }
-        for(Vector2d pos : otherGenerator){
-            grassMap.put(pos, new Grass(pos));
+
+        // Zbieram wolne miejsca poza równikiem
+        List<Vector2d> freeOtherPositions = new ArrayList<>();
+        for (int x = 0; x < configuration.width(); x++) {
+            for (int y = 0; y < configuration.height(); y++) {
+                Vector2d position = new Vector2d(x, y);
+                if (!equator.test(position) && !grassMap.containsKey(position) && !animalOccupiedPositions.contains(position)) {
+                    freeOtherPositions.add(position);
+                }
+            }
+        }
+
+        // Sprawdzam dostępność miejsc i modyfikuje licznik
+        if (freeEquatorPositions.size() < equatorGrassCount) {
+            otherGrassCount += equatorGrassCount - freeEquatorPositions.size();
+            equatorGrassCount = freeEquatorPositions.size();
+        }
+
+        if (freeOtherPositions.size() < otherGrassCount) {
+            equatorGrassCount = Math.min(
+                    equatorGrassCount + otherGrassCount - freeOtherPositions.size(),
+                    equatorThickness * configuration.width()
+            );
+            otherGrassCount = freeOtherPositions.size();
+        }
+
+        // Dodaje trawe na równiku
+        Collections.shuffle(freeEquatorPositions);
+        for (int i = 0; i < equatorGrassCount; i++) {
+            if (i >= freeEquatorPositions.size()) break; // Brak wolnych pozycji
+            Vector2d position = freeEquatorPositions.get(i);
+            grassMap.put(position, new Grass(position));
+        }
+
+        // Dodaje trawe poza równikiem
+        Collections.shuffle(freeOtherPositions);
+        for (int i = 0; i < otherGrassCount; i++) {
+            if (i >= freeOtherPositions.size()) break; // Brak wolnych pozycji
+            Vector2d position = freeOtherPositions.get(i);
+            grassMap.put(position, new Grass(position));
         }
     }
 
@@ -164,16 +195,13 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     }
 
     public int objectAt(Vector2d position) { // Prowizorka, sprawdzam czy coś jest wgl
-        SortedSet<Animal> animalsAtPosition = animalsMap.get(position);
-        if (animalsAtPosition != null) {
-            int len = animalsMap.get(position).size();
-            if (len > 0) {
-                return 1;
-            }
-        } else {
-            if (grassMap.containsKey(position)){
-                return 2;
-            }
+        SortedSet<Animal> animalsAtPosition = assureSetFor(position);
+        if (!animalsAtPosition.isEmpty()) {
+            return 1;
+        }
+
+        if (grassMap.containsKey(position)){
+            return 2;
         }
 
         return 3;
