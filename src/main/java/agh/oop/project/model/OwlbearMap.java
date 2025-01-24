@@ -84,4 +84,11 @@ public class OwlbearMap extends AbstractMap {
     public void setOwlbear(Owlbear owlbear) {
         this.owlbear = owlbear;
     }
+
+    protected void afterPreyUpdate() {
+        Vector2d owlbearPosition = owlbear.getPosition();
+
+        animalOccupiedPositions.remove(owlbearPosition);
+        animalsMap.remove(owlbearPosition);
+    }
 }

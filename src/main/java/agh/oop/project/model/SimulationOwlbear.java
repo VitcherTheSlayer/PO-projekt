@@ -23,6 +23,7 @@ public class SimulationOwlbear extends Simulation {
         System.out.println(owlbear.getPosition());
         owlbear.move(map);
         map.prey(day); // Owlbear poluje
+        map.afterPreyUpdate();
     }
 
     @Override
