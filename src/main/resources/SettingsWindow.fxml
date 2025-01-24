@@ -1,83 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="agh.oop.project.presenter.SettingsWindow"
-            prefHeight="800.0" prefWidth="600.0">
-    <VBox spacing="20" alignment="TOP_CENTER" prefWidth="600.0" prefHeight="800.0">
-        <HBox spacing="20" alignment="TOP_CENTER">
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="agh.oop.project.presenter.SettingsWindow">
+    <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="600.0" spacing="20">
+        <HBox alignment="TOP_CENTER" prefHeight="527.0" prefWidth="600.0" spacing="20">
             <!-- Kolumna 1: Dane mapy -->
-            <VBox spacing="10" alignment="TOP_LEFT">
-                <Label text="Map Settings" style="-fx-font-weight: bold;" />
-                <Label text="Height of the Map (in units):" />
-                <TextField fx:id="heightTF" promptText="Height"/>
-                <Label text="Width of the Map (in units):" />
-                <TextField fx:id="widthTF" promptText="Width"/>
-                <Label text="Map Variant (choose one):" />
-                <ComboBox fx:id="mapVariantCB" promptText="Map Variant">
+            <VBox alignment="TOP_LEFT" spacing="10">
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="138.0" style="-fx-font-weight: bold;" text="Map Settings">
+               <font>
+                  <Font name="Monospaced Regular" size="18.0" />
+               </font></Label>
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="137.0" text="Height of the Map" />
+                <TextField fx:id="heightTF" promptText="Height" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="132.0" text="Width of the Map" />
+                <TextField fx:id="widthTF" promptText="Width" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="133.0" text="Map Variant" />
+                <ComboBox fx:id="mapVariantCB" prefHeight="26.0" prefWidth="133.0" promptText="Map Variant">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Globe"/>
-                            <String fx:value="Wild Owlbear"/>
+                            <String fx:value="Globe" />
+                            <String fx:value="Wild Owlbear" />
                         </FXCollections>
                     </items>
                 </ComboBox>
             </VBox>
 
-            <!-- Kolumna 2: Dane symulacji (ilość elementów i energii) -->
-            <VBox spacing="10" alignment="TOP_LEFT">
-                <Label text="Simulation Data" style="-fx-font-weight: bold;" />
-                <Label text="Initial number of plants:" />
-                <TextField fx:id="initialPlantsTF" promptText="Initial Plants"/>
-                <Label text="Energy gained from a single plant:" />
-                <TextField fx:id="energyPerPlantTF" promptText="Energy Per Plant"/>
-                <Label text="Number of plants growing daily:" />
-                <TextField fx:id="plantGrowthPerDayTF" promptText="Plant Growth Per Day"/>
-                <Label text="Initial number of animals:" />
-                <TextField fx:id="initialAnimalsTF" promptText="Initial Animals"/>
-                <Label text="Initial energy of each animal:" />
-                <TextField fx:id="initialEnergyTF" promptText="Initial Energy"/>
-                <Label text="Minimum energy required for reproduction:" />
-                <TextField fx:id="reproductionMinEnergyTF" promptText="Reproduction Min Energy"/>
-                <Label text="Energy used during reproduction:" />
-                <TextField fx:id="reproductionEnergyUsageTF" promptText="Reproduction Energy Usage"/>
+            <!-- Kolumna 2: Dane symulacji (podział na dwie sekcje) -->
+            <VBox alignment="TOP_LEFT" spacing="10">
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="215.0" style="-fx-font-weight: bold;" text="Simulation Data">
+               <font>
+                  <Font name="Monospaced Regular" size="18.0" />
+               </font></Label>
+
+                <!-- Górna połowa: Dane do inicjacji symulacji -->
+                <VBox alignment="TOP_LEFT" spacing="10">
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" text="Initial num. of plants" textAlignment="CENTER" />
+                    <TextField fx:id="initialPlantsTF" promptText="Initial Plants" />
+                    <Label text="Initial number of animals" />
+                    <TextField fx:id="initialAnimalsTF" promptText="Initial Animals" />
+                    <Label text="Initial energy of each animal:" />
+                    <TextField fx:id="initialEnergyTF" promptText="Initial Energy" />
+                </VBox>
+
+                <!-- Dolna połowa: Dane do dziennego działania symulacji -->
+                <VBox alignment="TOP_LEFT" spacing="10">
+                    <Label text="Number of plants growing daily:" />
+                    <TextField fx:id="plantGrowthPerDayTF" promptText="Plant Growth Per Day" />
+                    <Label prefHeight="20.0" prefWidth="182.0" text="Energy gained from a single plant:" />
+                    <TextField fx:id="energyPerPlantTF" promptText="Energy Per Plant" />
+                    <Label text="Min energy required for breeding" />
+                    <TextField fx:id="reproductionMinEnergyTF" promptText="Reproduction Min Energy" />
+                    <Label text="Energy used during breeding" />
+                    <TextField fx:id="reproductionEnergyUsageTF" prefWidth="215.0" promptText="Reproduction Energy Usage" />
+                </VBox>
             </VBox>
 
             <!-- Kolumna 3: Dane związane z mutacjami i genomem -->
-            <VBox spacing="10" alignment="TOP_LEFT">
-                <Label text="Genetic Settings" style="-fx-font-weight: bold;" />
+            <VBox alignment="TOP_LEFT" spacing="10">
+                <Label alignment="CENTER" prefHeight="23.0" prefWidth="217.0" style="-fx-font-weight: bold;" text="Genetic Settings">
+               <font>
+                  <Font name="Monospaced Regular" size="18.0" />
+               </font></Label>
                 <Label text="Minimum number of mutations per animal:" />
-                <TextField fx:id="minMutationsTF" promptText="Min Mutations"/>
+                <TextField fx:id="minMutationsTF" promptText="Min Mutations" />
                 <Label text="Maximum number of mutations per animal:" />
-                <TextField fx:id="maxMutationsTF" promptText="Max Mutations"/>
+                <TextField fx:id="maxMutationsTF" promptText="Max Mutations" />
                 <Label text="Mutation Variant (choose one):" />
                 <ComboBox fx:id="mutationVariantCB" promptText="Mutation Variant">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Full Randomness"/>
-                            <String fx:value="Swap"/>
+                            <String fx:value="Full Randomness" />
+                            <String fx:value="Swap" />
                         </FXCollections>
                     </items>
                 </ComboBox>
                 <Label text="Percentage of Swap mutations:" />
-                <TextField fx:id="swapMutationPercentTF" promptText="Swap Mutation Percent"/>
+                <TextField fx:id="swapMutationPercentTF" promptText="Swap Mutation Percent" />
                 <Label text="Genome length of each animal:" />
-                <TextField fx:id="genomeLengthTF" promptText="Genome Length"/>
+                <TextField fx:id="genomeLengthTF" promptText="Genome Length" />
             </VBox>
         </HBox>
 
         <!-- Przycisk akcji (pod wszystkimi kolumnami na środku) -->
-        <HBox spacing="20" alignment="CENTER">
-            <Button text="Save File" fx:id="saveButton" onAction="#save"/>
-            <Button text="Read File" fx:id="readButton" onAction="#read"/>
-            <Button text="Start Simulation" fx:id="startSimulationButton" onAction="#startSimulation"/>
+        <HBox alignment="CENTER" prefHeight="134.0" prefWidth="600.0" spacing="20">
+            <Button fx:id="saveButton" onAction="#save" text="Save File" />
+            <Button fx:id="readButton" onAction="#read" text="Read File" />
+            <Button fx:id="startSimulationButton" onAction="#startSimulation" text="Start Simulation" />
         </HBox>
     </VBox>
 </AnchorPane>

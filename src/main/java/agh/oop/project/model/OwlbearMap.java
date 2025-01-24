@@ -72,15 +72,6 @@ public class OwlbearMap extends AbstractMap {
         return huntingGround;
     }
 
-    @Override
-    public int objectAt(Vector2d position) {
-        if (owlbear.getPosition().equals(position)) {
-            return 4;
-        }
-        int result = super.objectAt(position);
-        return result;
-    }
-
     public void setOwlbear(Owlbear owlbear) {
         this.owlbear = owlbear;
     }
@@ -90,5 +81,9 @@ public class OwlbearMap extends AbstractMap {
 
         animalOccupiedPositions.remove(owlbearPosition);
         animalsMap.remove(owlbearPosition);
+    }
+
+    public Owlbear getOwlbear() {
+        return owlbear;
     }
 }

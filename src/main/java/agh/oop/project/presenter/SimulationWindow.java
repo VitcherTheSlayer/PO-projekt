@@ -1,6 +1,7 @@
 package agh.oop.project.presenter;
 
 import agh.oop.project.model.*;
+import agh.oop.project.model.AbstractMap;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -8,14 +9,16 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.*;
 
 public class SimulationWindow {
     private static final int CELL_SIZE_MIN = 3;
@@ -29,6 +32,7 @@ public class SimulationWindow {
     private Simulation simulation;
     private AbstractMap worldMap;
     private boolean simulationRunning = false;
+    private Vector2d owlbearPosition;
 
     private int showAxis = 0;
     private Node lastNode = null;
@@ -105,7 +109,7 @@ public class SimulationWindow {
     public void drawMap() {
         if (worldMap == null || mapGrid == null) return;
         clearGrid();
-        System.out.println("drawMap");
+
         Boundary bounds = worldMap.getBoundary();
         Vector2d lowerLeft = bounds.lowerLeft();
         Vector2d upperRight = bounds.upperRight();
@@ -138,32 +142,137 @@ public class SimulationWindow {
         GridPane.setValignment(labelXY, VPos.CENTER);
         mapGrid.add(labelXY, upperRight.getX() - lowerLeft.getX() + 1, 0);
 
-        // Dodanie obiektów mapy do siatki
+        Image Death = new Image(getClass().getResourceAsStream("/images/Death.png"));
+        Image Desert = new Image(getClass().getResourceAsStream("/images/Desert.png"));
+        Image Jungle = new Image(getClass().getResourceAsStream("/images/Jungle.png"));
+        Image Palm = new Image(getClass().getResourceAsStream("/images/Palm.png"));
+        Image RedArea = new Image(getClass().getResourceAsStream("/images/RedArea.png"));
+
+        Map<Rotation, Image> animalImages = new HashMap<>();
+        Map<Rotation, Image> owlbearImages = new HashMap<>();
+
+        // Ładowanie obrazków
+        for (Rotation rotation : Rotation.values()) {
+            // Dla zwierząt
+            String animalPath = String.format("/images/Animal/%s.png", rotation.name());
+            animalImages.put(rotation, new Image(getClass().getResourceAsStream(animalPath)));
+
+            // Dla Owlbear
+            String owlbearPath = String.format("/images/Owlbear/%s.png", rotation.name());
+            owlbearImages.put(rotation, new Image(getClass().getResourceAsStream(owlbearPath)));
+        }
+
+        //0. Rysowanie tła + elementy OwlbearMap
         for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
             for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
                 Vector2d position = new Vector2d(x, y);
-                Object object = worldMap.objectAt(position);
 
-                if ((int) object != 3) {
-                    // Dodaj znaczek (Label) na pozycji, gdzie wykryto obiekt
-                    Label objectLabel = new Label("X");  // Możesz zmienić "X" na dowolny znak, np. ">", "*"
-                    if ((int) object == 1) {
-                        objectLabel.setText("+");
-                    } else if ((int) object == 2) {
-                        objectLabel.setText("*");
-                    } else if ((int) object == 4) {
-                        objectLabel.setText("@");
-                        System.out.println("Draw owlbear");
+                // Sprawdzenie, czy pozycja znajduje się w granicach jungli
+                Image backgroundImage = worldMap.getEquator().test(position) ? Jungle : Desert;
+
+                // Tworzenie ImageView dla tła
+                ImageView backgroundView = new ImageView(backgroundImage);
+
+                // Dopasowanie rozmiaru
+                backgroundView.setFitWidth(50);
+                backgroundView.setFitHeight(50);
+
+                // Ustawienie w gridzie
+                GridPane.setHalignment(backgroundView, HPos.CENTER);
+                GridPane.setValignment(backgroundView, VPos.CENTER);
+                mapGrid.add(backgroundView, x - lowerLeft.getX(), upperRight.getY() - y + 1);
+
+                // Sprawdzamy, czy mapą jest OwlbearMap
+                if (worldMap instanceof OwlbearMap) {
+                    // Jeśli jest to instancja OwlbearMap, dodajemy RedArea
+                    OwlbearMap map = (OwlbearMap) worldMap;
+                    if (map.getHuntingGround().test(position)) {
+                        ImageView redAreaView = new ImageView(RedArea);
+                        redAreaView.setFitWidth(50);
+                        redAreaView.setFitHeight(50);
+//                        redAreaView.setOpacity(0.5);  // Ustawienie przezroczystości
+
+                        // Ustawiamy pozycję RedArea
+                        GridPane.setHalignment(redAreaView, HPos.CENTER);
+                        GridPane.setValignment(redAreaView, VPos.CENTER);
+                        mapGrid.add(redAreaView, x - lowerLeft.getX(), upperRight.getY() - y + 1);
+
+                        // Rysowanie Owlbeara
+                        Owlbear owlbear = map.getOwlbear();
+                        this.owlbearPosition = owlbear.getPosition();
+
+                        if (position.equals(owlbearPosition)) {
+                            // Załaduj odpowiedni obrazek Owlbeara w zależności od jego rotacji
+                            Image owlbearImage = new Image(getClass().getResourceAsStream("/images/Owlbear/" + owlbear.getRotation() + ".png"));
+                            ImageView owlbearImageView = new ImageView(owlbearImage);
+                            owlbearImageView.setFitWidth(50);  // Możesz dostosować szerokość
+                            owlbearImageView.setFitHeight(50); // Możesz dostosować wysokość
+
+                            // Ustawienie pozycji dla Owlbeara
+                            GridPane.setHalignment(owlbearImageView, HPos.CENTER);
+                            GridPane.setValignment(owlbearImageView, VPos.CENTER);
+
+                            // Dodanie do siatki
+                            mapGrid.add(owlbearImageView, x - lowerLeft.getX(), upperRight.getY() - y + 1);
+                        }
                     }
-                    objectLabel.setStyle("-fx-font-size: 18; -fx-text-fill: blue;"); // Stylizacja dla znaku
-
-                    // Ustawienie pozycji na gridzie (liczba kolumn i wierszy)
-                    GridPane.setHalignment(objectLabel, HPos.CENTER);
-                    GridPane.setValignment(objectLabel, VPos.CENTER);
-
-                    // Dodanie do mapy
-                    mapGrid.add(objectLabel, x - lowerLeft.getX(), upperRight.getY() - y + 1);
                 }
+            }
+        }
+
+
+        // 1. Rysowanie zwierząt
+        for (Map.Entry<Vector2d, SortedSet<Animal>> entry : worldMap.getAnimalsMap().entrySet()) {
+            Vector2d position = entry.getKey();
+            SortedSet<Animal> animalsAtPosition = entry.getValue();
+
+            if (!animalsAtPosition.isEmpty()) {
+                // Dla każdego zwierzęcia na tej pozycji
+                for (Animal animal : animalsAtPosition) {
+                    // Tworzymy odpowiednią ścieżkę do obrazka na podstawie kierunku
+                    String animalDirection = animal.getRotation().name();  // Zgodnie z enum Rotation
+
+                    // Budujemy ścieżkę do obrazka zwierzęcia
+                    Image animalImage = new Image(getClass().getResourceAsStream("/images/Animal/" + animalDirection + ".png"));
+
+                    // Tworzymy ImageView, aby wyświetlić obrazek
+                    ImageView animalImageView = new ImageView(animalImage);
+
+                    // Dopasowanie rozmiaru obrazka
+                    animalImageView.setFitWidth(50);  // Możesz dostosować wymiary
+                    animalImageView.setFitHeight(50);
+
+                    // Ustawienie pozycji na siatce
+                    GridPane.setHalignment(animalImageView, HPos.CENTER);
+                    GridPane.setValignment(animalImageView, VPos.CENTER);
+
+                    // Dodanie do siatki
+                    mapGrid.add(animalImageView, position.getX() - lowerLeft.getX(), upperRight.getY() - position.getY() + 1);
+                }
+            }
+        }
+
+
+        // 2. Rysowanie trawy
+        for (Map.Entry<Vector2d, Grass> entry : worldMap.getGrassMap().entrySet()) {
+            Vector2d position = entry.getKey();
+            if (!position.equals(owlbearPosition)) {
+                // Tworzenie ścieżki do obrazka trawy
+                Image grassImage = new Image(getClass().getResourceAsStream("/images/Palm.png"));
+
+                // Tworzenie ImageView, aby wyświetlić obrazek
+                ImageView grassImageView = new ImageView(Palm);
+
+                // Dopasowanie rozmiaru obrazka (opcjonalnie dostosuj wymiary)
+                grassImageView.setFitWidth(50);  // Możesz dostosować szerokość
+                grassImageView.setFitHeight(50); // Możesz dostosować wysokość
+
+                // Ustawienie pozycji na siatce
+                GridPane.setHalignment(grassImageView, HPos.CENTER);
+                GridPane.setValignment(grassImageView, VPos.CENTER);
+
+                // Dodanie do siatki
+                mapGrid.add(grassImageView, position.getX() - lowerLeft.getX(), upperRight.getY() - position.getY() + 1);
             }
         }
     }
