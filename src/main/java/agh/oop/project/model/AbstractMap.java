@@ -195,13 +195,11 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     }
 
     public int objectAt(Vector2d position) { // Prowizorka, sprawdzam czy coś jest wgl
-        SortedSet<Animal> animalsAtPosition = animalsMap.get(position);
-        if (animalsAtPosition != null) {
-            int len = animalsMap.get(position).size();
-            if (len > 0) {
-                return 1;
-            }
+        SortedSet<Animal> animalsAtPosition = assureSetFor(position);
+        if (!animalsAtPosition.isEmpty()) {
+            return 1;
         }
+
         if (grassMap.containsKey(position)){
             return 2;
         }
