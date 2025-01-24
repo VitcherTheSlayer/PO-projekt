@@ -105,7 +105,7 @@ public class SimulationWindow {
     public void drawMap() {
         if (worldMap == null || mapGrid == null) return;
         clearGrid();
-
+        System.out.println("drawMap");
         Boundary bounds = worldMap.getBoundary();
         Vector2d lowerLeft = bounds.lowerLeft();
         Vector2d upperRight = bounds.upperRight();
@@ -153,6 +153,7 @@ public class SimulationWindow {
                         objectLabel.setText("*");
                     } else if ((int) object == 4) {
                         objectLabel.setText("@");
+                        System.out.println("Draw owlbear");
                     }
                     objectLabel.setStyle("-fx-font-size: 18; -fx-text-fill: blue;"); // Stylizacja dla znaku
 

@@ -14,11 +14,11 @@ public class OwlbearMap extends AbstractMap {
         int width = configuration.width();
         int height = configuration.height();
 
-        Vector2d lowerLeft = RandomPositionGenerator.getRandomPosition(width, height);
-        if (2*lowerLeft.getY() - height > 0) { // Gdy teren dropnie za wysoko
-            lowerLeft.add(new Vector2d(-(2*lowerLeft.getY() - height),0 ));
-        }
-        Vector2d upperRight = lowerLeft.add(new Vector2d((int) (width * 0.45), (int) (height * 0.45)));
+        // Długość boku terenu łowieckiego
+        int c = (int) Math.sqrt(0.2 * width * height);
+
+        Vector2d lowerLeft = RandomPositionGenerator.getRandomPosition(width-c, height-c);
+        Vector2d upperRight = lowerLeft.add(new Vector2d(c,c));
         huntingGround = new Boundary(lowerLeft, upperRight);
     }
 

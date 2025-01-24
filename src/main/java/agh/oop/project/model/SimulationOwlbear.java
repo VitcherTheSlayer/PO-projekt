@@ -14,12 +14,13 @@ public class SimulationOwlbear extends Simulation {
     @Override
     protected AbstractMap createMap(Configuration configuration) {
         this.map = new OwlbearMap(configuration);
+        System.out.println(map.getHuntingGround());
         return map;
     }
 
     @Override
     protected void specificDailyLogic() {
-        System.out.println("Ruszam owl");
+        System.out.println(owlbear.getPosition());
         owlbear.move(map);
         map.prey(day); // Owlbear poluje
     }
