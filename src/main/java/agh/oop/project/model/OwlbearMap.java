@@ -24,32 +24,34 @@ public class OwlbearMap extends AbstractMap {
 
     @Override
     public Pair<Vector2d, Rotation> requestMove(GenomeMovableEntity genomeMovableEntity, Vector2d requestedPosition) {
-        Vector2d newPosition = requestedPosition;
-        Rotation newRotation = genomeMovableEntity.getRotation();
-
-        // Sprawdzenie, czy mamy do czynienia z Owlbear-em
         if (genomeMovableEntity instanceof Owlbear) {
+            // Logika specyficzna dla Owlbear
             if (!huntingGround.test(requestedPosition)) {
-                newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT);
+                Rotation newRotation = genomeMovableEntity.getRotation().add(Genome.UNIQUE_GENES_COUNT);
+                return new Pair<>(genomeMovableEntity.getPosition(), newRotation); // Zatrzymaj w miejscu i zmień rotację
+            } else {
+                int newX = requestedPosition.getX();
+                int newY = requestedPosition.getY();
+
+                if (newX < huntingGround.lowerLeft().getX() || newX > huntingGround.upperRight().getX()) {
+                    newX = genomeMovableEntity.getPosition().getX();
+                    Rotation newRotation = genomeMovableEntity.getRotation().add(Genome.UNIQUE_GENES_COUNT);
+                    return new Pair<>(new Vector2d(newX, genomeMovableEntity.getPosition().getY()), newRotation);
+                }
+
+                if (newY < huntingGround.lowerLeft().getY() || newY > huntingGround.upperRight().getY()) {
+                    newY = genomeMovableEntity.getPosition().getY();
+                    Rotation newRotation = genomeMovableEntity.getRotation().add(Genome.UNIQUE_GENES_COUNT);
+                    return new Pair<>(new Vector2d(genomeMovableEntity.getPosition().getX(), newY), newRotation);
+                }
+
+                return new Pair<>(new Vector2d(newX, newY), genomeMovableEntity.getRotation());
             }
         } else {
-            int newX = requestedPosition.getX();
-            if (newX < boundary.lowerLeft().getX()) {
-                newX = boundary.upperRight().getX();
-            } else if (newX > boundary.upperRight().getX()) {
-                newX = boundary.lowerLeft().getX();
-            }
-
-            int newY = requestedPosition.getY();
-            if (newY < boundary.lowerLeft().getY() || newY > boundary.upperRight().getY()) {
-                newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT);
-            }
-
-            newPosition = new Vector2d(newX, newY);
+            return handleRegularMove(genomeMovableEntity, requestedPosition);
         }
-
-        return new Pair<>(newPosition, newRotation);
     }
+
 
 
     @Override
