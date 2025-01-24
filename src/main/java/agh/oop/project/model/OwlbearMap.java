@@ -11,7 +11,6 @@ public class OwlbearMap extends AbstractMap {
 
     protected OwlbearMap(Configuration configuration) {
         super(configuration);
-
         int width = configuration.width();
         int height = configuration.height();
 
@@ -56,14 +55,31 @@ public class OwlbearMap extends AbstractMap {
     @Override
     public void mapChanged(AbstractMap worldMap, String message) {}
 
-    public void prey() {
+    public void prey(int day) {
         if (animalOccupiedPositions.contains(owlbear.getPosition())) {
             SortedSet<Animal> animalsOnPosition = animalsMap.get(owlbear.getPosition());
             if (animalsOnPosition != null) {
                 for (Animal animal : animalsOnPosition) {
-                    animal.kill();
+                    animal.die(day,"Eaten");
                 }
             }
         }
+    }
+
+    public Boundary getHuntingGround() {
+        return huntingGround;
+    }
+
+    @Override
+    public int objectAt(Vector2d position) {
+        if (owlbear.getPosition().equals(position)) {
+            return 4;
+        }
+        int result = super.objectAt(position);
+        return result;
+    }
+
+    public void setOwlbear(Owlbear owlbear) {
+        this.owlbear = owlbear;
     }
 }

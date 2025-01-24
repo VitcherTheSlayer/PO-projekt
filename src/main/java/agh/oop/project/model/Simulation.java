@@ -7,18 +7,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Simulation {
-    private final Configuration configuration;
+import static agh.oop.project.model.MapVariant.GLOBE;
+
+public abstract class Simulation {
+    protected final Configuration configuration;
     private final List<Animal> animals = new ArrayList<>();
     private static final Vector2d VECTORZERO =  new Vector2d(0,0);
-    private static AbstractMap map;
+    protected static AbstractMap map;
     private SimulationWindow window;
+    protected int day = 1;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
-        AbstractMap map = new GlobeMap(configuration);
-        Simulation.map = map;
+        map = createMap(configuration);
     }
+
+    protected abstract void specificDailyLogic();
+
+    protected abstract AbstractMap createMap(Configuration configuration);
 
     public void setSimulationWindow(SimulationWindow window){
         this.window = window;
@@ -49,24 +55,21 @@ public class Simulation {
     }
 
     public void run(){
-        int day = 1;
         while (day < 50) {
             // Tutaj jakaś logia zmiany dnia czy coś
             dailyCycle();
             window.mapChanged();
-
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
             day++;
         }
     }
 
     private void dailyCycle() {
+        specificDailyLogic();
         map.growGrass(configuration.plantGrowthPerDay());
         map.moveAnimals();
         map.feast();

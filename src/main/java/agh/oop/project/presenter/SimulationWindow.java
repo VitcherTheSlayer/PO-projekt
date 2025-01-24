@@ -99,14 +99,11 @@ public class SimulationWindow {
 
     public void setWorldMap(AbstractMap map){
         this.worldMap = map;
-        //map.addObserver(this);
-        drawMap(); // Rysowanie mapy zaraz po ustawieniu
     }
 
 
     public void drawMap() {
         if (worldMap == null || mapGrid == null) return;
-
         clearGrid();
 
         Boundary bounds = worldMap.getBoundary();
@@ -154,6 +151,8 @@ public class SimulationWindow {
                         objectLabel.setText("+");
                     } else if ((int) object == 2) {
                         objectLabel.setText("*");
+                    } else if ((int) object == 4) {
+                        objectLabel.setText("@");
                     }
                     objectLabel.setStyle("-fx-font-size: 18; -fx-text-fill: blue;"); // Stylizacja dla znaku
 

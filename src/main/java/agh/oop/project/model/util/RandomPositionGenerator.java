@@ -1,5 +1,6 @@
 package agh.oop.project.model.util;
 
+import agh.oop.project.model.Boundary;
 import agh.oop.project.model.Vector2d;
 
 import java.util.*;
@@ -91,6 +92,20 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         int x = random.nextInt(maxWidth + 1);
         int y = random.nextInt(maxHeight + 1);
         return new Vector2d(x, y);
+    }
+
+    public static Vector2d getRandomPositionWithinBounds(Boundary bounds) {
+        Random rng = new Random();
+
+        int minX = bounds.lowerLeft().getX();
+        int minY = bounds.lowerLeft().getY();
+        int maxX = bounds.upperRight().getX();
+        int maxY = bounds.upperRight().getY();
+
+        int randomX = rng.nextInt(maxX - minX + 1) + minX;
+        int randomY = rng.nextInt(maxY - minY + 1) + minY;
+
+        return new Vector2d(randomX, randomY);
     }
 
 }
