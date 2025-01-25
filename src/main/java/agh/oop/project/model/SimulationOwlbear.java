@@ -20,7 +20,6 @@ public class SimulationOwlbear extends Simulation {
 
     @Override
     protected void specificDailyLogic() {
-        System.out.println(owlbear.getPosition());
         owlbear.move(map);
         map.prey(day); // Owlbear poluje
         map.afterPreyUpdate();

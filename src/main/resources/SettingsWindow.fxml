@@ -8,18 +8,18 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="agh.oop.project.presenter.SettingsWindow">
     <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="600.0" spacing="20">
+        <!-- Dodano duży nagłówek -->
+        <Label alignment="CENTER" style="-fx-font-family: 'Monospaced'; -fx-font-size: 24; -fx-font-weight: bold;" text="Owlbear Simulation" />
+
         <HBox alignment="TOP_CENTER" prefHeight="527.0" prefWidth="600.0" spacing="20">
             <!-- Kolumna 1: Dane mapy -->
             <VBox alignment="TOP_LEFT" spacing="10">
-                <Label alignment="CENTER" prefHeight="18.0" prefWidth="138.0" style="-fx-font-weight: bold;" text="Map Settings">
-               <font>
-                  <Font name="Monospaced Regular" size="18.0" />
-               </font></Label>
-                <Label alignment="CENTER" prefHeight="18.0" prefWidth="137.0" text="Height of the Map" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="138.0" style="-fx-font-family: 'Monospaced'; -fx-font-weight: bold;" text="Map Settings" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="137.0" style="-fx-font-family: 'Monospaced';" text="Height of the Map" />
                 <TextField fx:id="heightTF" promptText="Height" />
-                <Label alignment="CENTER" prefHeight="18.0" prefWidth="132.0" text="Width of the Map" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="132.0" style="-fx-font-family: 'Monospaced';" text="Width of the Map" />
                 <TextField fx:id="widthTF" promptText="Width" />
-                <Label alignment="CENTER" prefHeight="18.0" prefWidth="133.0" text="Map Variant" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="133.0" style="-fx-font-family: 'Monospaced';" text="Map Variant" />
                 <ComboBox fx:id="mapVariantCB" prefHeight="26.0" prefWidth="133.0" promptText="Map Variant">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
@@ -32,45 +32,39 @@
 
             <!-- Kolumna 2: Dane symulacji (podział na dwie sekcje) -->
             <VBox alignment="TOP_LEFT" spacing="10">
-                <Label alignment="CENTER" prefHeight="18.0" prefWidth="215.0" style="-fx-font-weight: bold;" text="Simulation Data">
-               <font>
-                  <Font name="Monospaced Regular" size="18.0" />
-               </font></Label>
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="215.0" style="-fx-font-family: 'Monospaced'; -fx-font-weight: bold;" text="Simulation Data" />
 
                 <!-- Górna połowa: Dane do inicjacji symulacji -->
                 <VBox alignment="TOP_LEFT" spacing="10">
-                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" text="Initial num. of plants" textAlignment="CENTER" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Initial num. of plants" textAlignment="CENTER" />
                     <TextField fx:id="initialPlantsTF" promptText="Initial Plants" />
-                    <Label text="Initial number of animals" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Initial number of animals" />
                     <TextField fx:id="initialAnimalsTF" promptText="Initial Animals" />
-                    <Label text="Initial energy of each animal:" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Initial energy of each animal:" />
                     <TextField fx:id="initialEnergyTF" promptText="Initial Energy" />
                 </VBox>
 
                 <!-- Dolna połowa: Dane do dziennego działania symulacji -->
                 <VBox alignment="TOP_LEFT" spacing="10">
-                    <Label text="Number of plants growing daily:" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Number of plants growing daily:" />
                     <TextField fx:id="plantGrowthPerDayTF" promptText="Plant Growth Per Day" />
-                    <Label prefHeight="20.0" prefWidth="182.0" text="Energy gained from a single plant:" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Energy gained from a single plant:" />
                     <TextField fx:id="energyPerPlantTF" promptText="Energy Per Plant" />
-                    <Label text="Min energy required for breeding" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Min energy required for breeding" />
                     <TextField fx:id="reproductionMinEnergyTF" promptText="Reproduction Min Energy" />
-                    <Label text="Energy used during breeding" />
+                    <Label alignment="CENTER" prefHeight="18.0" prefWidth="220.0" style="-fx-font-family: 'Monospaced';" text="Energy used during breeding" />
                     <TextField fx:id="reproductionEnergyUsageTF" prefWidth="215.0" promptText="Reproduction Energy Usage" />
                 </VBox>
             </VBox>
 
             <!-- Kolumna 3: Dane związane z mutacjami i genomem -->
             <VBox alignment="TOP_LEFT" spacing="10">
-                <Label alignment="CENTER" prefHeight="23.0" prefWidth="217.0" style="-fx-font-weight: bold;" text="Genetic Settings">
-               <font>
-                  <Font name="Monospaced Regular" size="18.0" />
-               </font></Label>
-                <Label text="Minimum number of mutations per animal:" />
+                <Label alignment="CENTER" prefHeight="23.0" prefWidth="217.0" style="-fx-font-family: 'Monospaced'; -fx-font-weight: bold;" text="Genetic Settings" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="217.0" style="-fx-font-family: 'Monospaced';" text="Minimum number of mutations per animal:" />
                 <TextField fx:id="minMutationsTF" promptText="Min Mutations" />
-                <Label text="Maximum number of mutations per animal:" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="217.0" style="-fx-font-family: 'Monospaced';" text="Maximum number of mutations per animal:" />
                 <TextField fx:id="maxMutationsTF" promptText="Max Mutations" />
-                <Label text="Mutation Variant (choose one):" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="217.0" style="-fx-font-family: 'Monospaced';" text="Mutation Variant (choose one):" />
                 <ComboBox fx:id="mutationVariantCB" promptText="Mutation Variant">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
@@ -79,9 +73,9 @@
                         </FXCollections>
                     </items>
                 </ComboBox>
-                <Label text="Percentage of Swap mutations:" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="217.0" style="-fx-font-family: 'Monospaced';" text="Percentage of Swap mutations:" />
                 <TextField fx:id="swapMutationPercentTF" promptText="Swap Mutation Percent" />
-                <Label text="Genome length of each animal:" />
+                <Label alignment="CENTER" prefHeight="18.0" prefWidth="217.0" style="-fx-font-family: 'Monospaced';" text="Genome length of each animal:" />
                 <TextField fx:id="genomeLengthTF" promptText="Genome Length" />
             </VBox>
         </HBox>

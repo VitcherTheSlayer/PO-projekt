@@ -97,8 +97,11 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
                 var it = currentSet.iterator();
                 Animal first = it.next();
                 Animal second = it.next();
-                if(second.breedable()){
-                    addAnimal(first.breedWith(second));
+                if (second.breedable()) {
+                    Animal offspring = first.breedWith(second);
+                    if (offspring != null) { // Czsami null returnowało i był null pointer exp.
+                        addAnimal(offspring);
+                    }
                 }
             }
         }
@@ -208,6 +211,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         int newY = requestedPosition.getY();
         if (newY < boundary.lowerLeft().getY() || newY > boundary.upperRight().getY()) {
             newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT);
+            newY = genomeMovableEntity.getPosition().getY(); // Czasami wychodziło poza mape zwierze
         }
 
         return new Pair<>(new Vector2d(newX, newY), newRotation);
