@@ -143,7 +143,10 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         }
 
         if (freeOtherPositions.size() < otherGrassCount) {
-            equatorGrassCount += otherGrassCount - freeOtherPositions.size();
+            equatorGrassCount = Math.min(
+                    equatorGrassCount + otherGrassCount - freeOtherPositions.size(),
+                    equatorThickness * configuration.width()
+            );
             otherGrassCount = freeOtherPositions.size();
         }
 
