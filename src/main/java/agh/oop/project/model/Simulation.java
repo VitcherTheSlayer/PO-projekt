@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 import static agh.oop.project.model.MapVariant.GLOBE;
 
@@ -54,13 +55,17 @@ public abstract class Simulation {
         }
     }
 
-    public void run(){
-        while (day < 50) {
+    public void run() throws InterruptedException {
+        while (day < 50 || true) {
             // Tutaj jakaś logia zmiany dnia czy coś
             dailyCycle();
-            window.mapChanged();
+
+            // latch to wait for map being drawn
+            Semaphore semaphore = new Semaphore(0);
+            window.mapChanged(semaphore);
+            semaphore.acquire();
             try {
-                Thread.sleep(2000);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
