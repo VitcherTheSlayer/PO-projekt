@@ -3,6 +3,7 @@ package agh.oop.project.model;
 import javafx.util.Pair;
 import agh.oop.project.model.util.RandomPositionGenerator;
 
+import java.util.Random;
 import java.util.SortedSet;
 
 public class OwlbearMap extends GlobeMap {
@@ -20,6 +21,12 @@ public class OwlbearMap extends GlobeMap {
         Vector2d lowerLeft = RandomPositionGenerator.getRandomPosition(width-c, height-c);
         Vector2d upperRight = lowerLeft.add(new Vector2d(c,c));
         huntingGround = new Boundary(lowerLeft, upperRight);
+
+        // Tworzenie Owlbear
+        Random rng = new Random();
+        Vector2d randomPlace = RandomPositionGenerator.getRandomPositionWithinBounds(huntingGround);
+        Rotation rot = Rotation.get(rng.nextInt(Genome.UNIQUE_GENES_COUNT));
+        this.owlbear = new Owlbear(configuration.genomeLength(),randomPlace,rot);
     }
 
     @Override
@@ -54,23 +61,19 @@ public class OwlbearMap extends GlobeMap {
         }
     }
 
-    public void prey(int day) {
-        if (animalOccupiedPositions.contains(owlbear.getPosition())) {
-            SortedSet<Animal> animalsOnPosition = animalsMap.get(owlbear.getPosition());
-            if (animalsOnPosition != null) {
-                for (Animal animal : animalsOnPosition) {
-                    animal.die(day,"Eaten");
-                }
+    public void huntAnimals(int day) {
+        SortedSet<Animal> animalsOnPosition = assureSetFor(owlbear.getPosition());
+
+        if (!animalsOnPosition.isEmpty()) {
+            for (Animal animal : animalsOnPosition) {
+                animal.die(day, "Eaten");
             }
+            animalsOnPosition.clear();
         }
     }
 
     public Boundary getHuntingGround() {
         return huntingGround;
-    }
-
-    public void setOwlbear(Owlbear owlbear) {
-        this.owlbear = owlbear;
     }
 
     protected void afterPreyUpdate() {

@@ -14,26 +14,19 @@ public class SimulationOwlbear extends Simulation {
     @Override
     protected AbstractMap createMap(Configuration configuration) {
         this.map = new OwlbearMap(configuration);
-        System.out.println(map.getHuntingGround());
         return map;
     }
 
     @Override
     protected void specificDailyLogic() {
-        owlbear.move(map);
-        map.prey(day); // Owlbear poluje
+        map.getOwlbear().move(map);
+        map.huntAnimals(day); // Owlbear poluje
         map.afterPreyUpdate();
     }
 
     @Override
     public void createMapElements(){
         super.createMapElements();
-        Random rng = new Random();
-        Boundary bounds = map.getHuntingGround();
-        Vector2d randomPlace = RandomPositionGenerator.getRandomPositionWithinBounds(bounds);
-        Rotation rot = Rotation.get(rng.nextInt(Genome.UNIQUE_GENES_COUNT));
-        this.owlbear = new Owlbear(configuration.genomeLength(),randomPlace,rot);
-        map.setOwlbear(owlbear);
     }
 }
 
