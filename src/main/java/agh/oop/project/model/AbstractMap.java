@@ -199,24 +199,6 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return uuid;
     }
 
-    protected Pair<Vector2d, Rotation> handleRegularMove(GenomeMovableEntity genomeMovableEntity, Vector2d requestedPosition) {
-        int newX = requestedPosition.getX();
-        if (newX < boundary.lowerLeft().getX()) {
-            newX = boundary.upperRight().getX();
-        } else if (newX > boundary.upperRight().getX()) {
-            newX = boundary.lowerLeft().getX();
-        }
-
-        Rotation newRotation = genomeMovableEntity.getRotation();
-        int newY = requestedPosition.getY();
-        if (newY < boundary.lowerLeft().getY() || newY > boundary.upperRight().getY()) {
-            newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT);
-            newY = genomeMovableEntity.getPosition().getY(); // Czasami wychodziło poza mape zwierze
-        }
-
-        return new Pair<>(new Vector2d(newX, newY), newRotation);
-    }
-
     public Map<Vector2d, Grass> getGrassMap() {
         return grassMap;
     }
@@ -226,4 +208,5 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     public Map<Vector2d, SortedSet<Animal>> getAnimalsMap() {
         return animalsMap;
     }
+    public void mapChanged(AbstractMap worldMap, String message) {}
 }

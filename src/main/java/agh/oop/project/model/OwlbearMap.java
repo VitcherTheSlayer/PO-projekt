@@ -5,7 +5,7 @@ import agh.oop.project.model.util.RandomPositionGenerator;
 
 import java.util.SortedSet;
 
-public class OwlbearMap extends AbstractMap {
+public class OwlbearMap extends GlobeMap {
     protected final Boundary huntingGround;
     private Owlbear owlbear;
 
@@ -33,13 +33,15 @@ public class OwlbearMap extends AbstractMap {
                 int newX = requestedPosition.getX();
                 int newY = requestedPosition.getY();
 
-                if (newX < huntingGround.lowerLeft().getX() || newX > huntingGround.upperRight().getX()) {
+                if (newX < huntingGround.lowerLeft().getX() ||
+                        newX > huntingGround.upperRight().getX()) {
                     newX = genomeMovableEntity.getPosition().getX();
                     Rotation newRotation = genomeMovableEntity.getRotation().add(Genome.UNIQUE_GENES_COUNT);
                     return new Pair<>(new Vector2d(newX, genomeMovableEntity.getPosition().getY()), newRotation);
                 }
 
-                if (newY < huntingGround.lowerLeft().getY() || newY > huntingGround.upperRight().getY()) {
+                if (newY < huntingGround.lowerLeft().getY() ||
+                        newY > huntingGround.upperRight().getY()) {
                     newY = genomeMovableEntity.getPosition().getY();
                     Rotation newRotation = genomeMovableEntity.getRotation().add(Genome.UNIQUE_GENES_COUNT);
                     return new Pair<>(new Vector2d(genomeMovableEntity.getPosition().getX(), newY), newRotation);
@@ -48,14 +50,9 @@ public class OwlbearMap extends AbstractMap {
                 return new Pair<>(new Vector2d(newX, newY), genomeMovableEntity.getRotation());
             }
         } else {
-            return handleRegularMove(genomeMovableEntity, requestedPosition);
+            return super.requestMove(genomeMovableEntity, requestedPosition);
         }
     }
-
-
-
-    @Override
-    public void mapChanged(AbstractMap worldMap, String message) {}
 
     public void prey(int day) {
         if (animalOccupiedPositions.contains(owlbear.getPosition())) {

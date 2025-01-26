@@ -30,7 +30,8 @@
             <!-- Siatka symulacji na środku -->
             <center>
                 <GridPane fx:id="mapGrid" gridLinesVisible="true"
-                          alignment="CENTER" maxHeight="500.0" maxWidth="500.0"
+                          alignment="CENTER" prefHeight="500.0" prefWidth="500.0"
+                          maxHeight="500.0" maxWidth="500.0"
                           style="-fx-border-color: black; -fx-border-width: 1;">
                     <!-- Kolumny i wiersze są dynamicznie dodawane w kodzie -->
                 </GridPane>
