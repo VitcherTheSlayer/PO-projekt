@@ -102,8 +102,8 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         int maxX = bounds.upperRight().getX();
         int maxY = bounds.upperRight().getY();
 
-        int randomX = rng.nextInt(maxX - minX + 1) + minX;
-        int randomY = rng.nextInt(maxY - minY + 1) + minY;
+        int randomX = rng.nextInt(minX,maxX + 1);
+        int randomY = rng.nextInt(minY,maxY + 1);
 
         return new Vector2d(randomX, randomY);
     }
