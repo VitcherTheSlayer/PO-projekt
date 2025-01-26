@@ -1,9 +1,6 @@
 package agh.oop.project.presenter;
 
-import agh.oop.project.model.Configuration;
-import agh.oop.project.model.MapVariant;
-import agh.oop.project.model.MutationVariant;
-import agh.oop.project.model.Simulation;
+import agh.oop.project.model.*;
 import agh.oop.project.presenter.SimulationWindow;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -176,7 +173,7 @@ public class SettingsWindow {
 
         SimulationWindow simulationWindow = simulationLoader.getController();
         simulationWindow.init(stage);
-        Simulation simulation = new Simulation(this.getConfig());
+        Simulation simulation = SimulationFactory.createSimulation(this.getConfig());
         simulationWindow.setSimulation(simulation);
         simulationWindow.setWorldMap(simulation.getMap());
         simulation.createMapElements();

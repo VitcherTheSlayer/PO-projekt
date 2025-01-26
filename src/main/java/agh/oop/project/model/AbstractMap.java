@@ -1,6 +1,7 @@
 package agh.oop.project.model;
 
 import agh.oop.project.model.util.RandomPositionGenerator;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -96,8 +97,11 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
                 var it = currentSet.iterator();
                 Animal first = it.next();
                 Animal second = it.next();
-                if(second.breedable()){
-                    addAnimal(first.breedWith(second));
+                if (second.breedable()) {
+                    Animal offspring = first.breedWith(second);
+                    if (offspring != null) { // Czsami null returnowało i był null pointer exp.
+                        addAnimal(offspring);
+                    }
                 }
             }
         }
@@ -112,7 +116,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         // Zbieram wolne miejsca na równiku
         List<Vector2d> freeEquatorPositions = new ArrayList<>();
-        for (int x = 0; x < configuration.width(); x++) {
+        for (int x = 0; x <= configuration.width(); x++) {
             for (int y = equatorDelta.getY(); y < equatorDelta.getY() + equatorThickness; y++) {
                 Vector2d position = new Vector2d(x, y);
                 if (!grassMap.containsKey(position) && !animalOccupiedPositions.contains(position)) {
@@ -123,8 +127,8 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         // Zbieram wolne miejsca poza równikiem
         List<Vector2d> freeOtherPositions = new ArrayList<>();
-        for (int x = 0; x < configuration.width(); x++) {
-            for (int y = 0; y < configuration.height(); y++) {
+        for (int x = 0; x <= configuration.width(); x++) {
+            for (int y = 0; y <= configuration.height(); y++) {
                 Vector2d position = new Vector2d(x, y);
                 if (!equator.test(position) && !grassMap.containsKey(position) && !animalOccupiedPositions.contains(position)) {
                     freeOtherPositions.add(position);
@@ -194,19 +198,18 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return new Boundary(boundary.lowerLeft(), boundary.upperRight());
     }
 
-    public int objectAt(Vector2d position) { // Prowizorka, sprawdzam czy coś jest wgl
-        SortedSet<Animal> animalsAtPosition = assureSetFor(position);
-        if (!animalsAtPosition.isEmpty()) {
-            return 1;
-        }
-
-        if (grassMap.containsKey(position)){
-            return 2;
-        }
-
-        return 3;
-    }
     public UUID getId() {
         return uuid;
     }
+
+    public Map<Vector2d, Grass> getGrassMap() {
+        return grassMap;
+    }
+    public Boundary getEquator() {
+        return equator;
+    }
+    public Map<Vector2d, SortedSet<Animal>> getAnimalsMap() {
+        return animalsMap;
+    }
+    public void mapChanged(AbstractMap worldMap, String message) {}
 }
