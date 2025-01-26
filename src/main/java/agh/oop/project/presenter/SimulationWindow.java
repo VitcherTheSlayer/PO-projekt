@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 public class SimulationWindow {
     private static final int CELL_SIZE_MIN = 3;
@@ -85,7 +86,11 @@ public class SimulationWindow {
         if (!simulationRunning) {
             simulationRunning = true;
             Thread simulationThread = new Thread(() -> {
-                simulation.run();
+                try {
+                    simulation.run();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             });
             simulationThread.setDaemon(true);
             simulationThread.start();
@@ -256,10 +261,11 @@ public class SimulationWindow {
         mapGrid.getRowConstraints().clear();
     }
 
-    public void mapChanged() {
+    public void mapChanged(Semaphore semaphore) {
         Platform.runLater(() -> {
             drawMapReforged(); // Rysowanie mapy
             updateSelectedAnimalPresenter(); // Aktualizacja etykiety z pozycjami zwierząt (debug)
+            semaphore.release();
         });
     }
 
