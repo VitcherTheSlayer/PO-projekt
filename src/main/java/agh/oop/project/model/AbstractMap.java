@@ -1,8 +1,5 @@
 package agh.oop.project.model;
 
-import agh.oop.project.model.util.RandomPositionGenerator;
-import javafx.util.Pair;
-
 import java.util.*;
 
 public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
@@ -18,6 +15,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected static final int EQUATOR_AREA_PERCENT = 20;
     protected static final int EQUATOR_GROWTH_PERCENT = 80;
     private final UUID uuid = UUID.randomUUID();
+    private List<Integer> lifeSpan = new ArrayList<>();
 
     protected AbstractMap(Configuration configuration) {
         this.configuration = configuration;
@@ -101,6 +99,8 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
                     Animal offspring = first.breedWith(second);
                     if (offspring != null) { // Czsami null returnowało i był null pointer exp.
                         addAnimal(offspring);
+                        first.addOfspring(offspring);
+                        second.addOfspring(offspring);
                     }
                 }
             }
@@ -175,7 +175,15 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         growGrass(configuration.plantGrowthPerDay());
     }
 
-    public void beforeEatUpdate(){}
+    public void beforeEatUpdate(int day){
+        for (Animal animal : getAnimals()) {
+            if (animal.getEnergy() <= 0) {
+                animal.die(day,"Starve");
+                lifeSpan.add(animal.getAge());
+                removeAnimal(animal);
+            }
+        }
+    }
 
     protected SortedSet<Animal> assureSetFor(Vector2d position) {
         SortedSet<Animal> animals = animalsMap.get(position);
@@ -212,4 +220,8 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return animalsMap;
     }
     public void mapChanged(AbstractMap worldMap, String message) {}
+
+    public List<Integer> getLifeSpan() {
+        return lifeSpan;
+    }
 }

@@ -18,7 +18,6 @@ public abstract class Simulation {
     private SimulationWindow window;
     protected int day = 1;
     private volatile boolean isPaused = false;
-    private volatile boolean stopSimulation = false;
     private final Object pauseLock = new Object();
 
     public Simulation(Configuration configuration) {
@@ -74,14 +73,14 @@ public abstract class Simulation {
                 }
             }
 
-            dailyCycle();
+            dailyCycle(day);
 
             // latch to wait for map being drawn
             Semaphore semaphore = new Semaphore(0);
             window.mapChanged(semaphore);
             semaphore.acquire();
             try {
-                Thread.sleep(20);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -89,8 +88,9 @@ public abstract class Simulation {
         }
     }
 
-    private void dailyCycle() {
+    private void dailyCycle(int day) {
         specificDailyLogic();
+        map.beforeEatUpdate(day);
         map.growGrass(configuration.plantGrowthPerDay());
         map.moveAnimals();
         map.feast();

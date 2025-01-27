@@ -286,9 +286,12 @@ public class SimulationWindow {
         StringBuilder positionsBuilder = new StringBuilder("Current Animal Positions:\n");
         animals.forEach(animal -> {
             positionsBuilder.append("Position: ").append(animal.getPosition())
-                    .append(", Direction: ").append(animal.getRotation())
+                    .append("Energy: ").append(animal.getEnergy()).append(" ")
+                    .append("Children amnt: ").append(animal.childrenCount())
                     .append("\n");
         });
+        positionsBuilder.append("Amount of dead animals: ").append(worldMap.getLifeSpan().size());
+
 
         // Ustawienie tekstu w etykiecie
         selectedAnimalPresenter.setText(positionsBuilder.toString());
