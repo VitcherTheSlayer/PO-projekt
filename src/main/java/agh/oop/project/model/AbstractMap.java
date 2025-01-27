@@ -224,4 +224,39 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     public List<Integer> getLifeSpan() {
         return lifeSpan;
     }
+
+    public int getAllFreeCells() {
+        int allFreeCells = (configuration.height()+1) * (configuration.width()+1);
+        allFreeCells -= grassMap.size();
+        for (SortedSet<Animal> animals : animalsMap.values()) {
+            if (!animals.isEmpty()) {
+                --allFreeCells;
+            }
+        }
+        return allFreeCells;
+    }
+
+    public double getAverageLifeSpan() {
+        if (lifeSpan.isEmpty()) {
+            return 0;
+        }
+
+        double sum = 0;
+        for (int life : lifeSpan) {
+            sum += life;
+        }
+        return sum / lifeSpan.size();
+    }
+
+    public double getAverageEnergy() {
+        int sum = 0;
+        for (Animal animal : getAnimals()) {
+            sum += animal.getEnergy();
+        }
+        return (double) sum / getAnimals().size();
+    }
+
+    public int getPlantsAmount() {
+        return grassMap.size();
+    }
 }

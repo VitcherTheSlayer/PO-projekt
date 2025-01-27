@@ -96,4 +96,8 @@ public abstract class Simulation {
         map.feast();
         map.breed();
     }
+
+    public int getDay() {
+        return day;
+    }
 }
