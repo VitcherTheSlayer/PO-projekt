@@ -2,6 +2,7 @@ package agh.oop.project.presenter;
 
 import agh.oop.project.model.*;
 import agh.oop.project.model.AbstractMap;
+import agh.oop.project.model.StatsCollector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -10,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
@@ -20,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.*;
@@ -79,6 +82,9 @@ public class SimulationWindow {
 
     @FXML
     private ComboBox<String> viewModeComboBox;
+
+    @FXML
+    private Button saveStatistics;
 
     @FXML
     private void onClickPlay() {
@@ -288,7 +294,6 @@ public class SimulationWindow {
     public void mapChanged(Semaphore semaphore) {
         Platform.runLater(() -> {
             drawMapReforged(); // Rysowanie mapy
-            updateSelectedAnimalPresenter(); // Aktualizacja etykiety z pozycjami zwierząt (debug)
             updateStats(simulation.getDay(), // day
                     worldMap.getAnimals().size(), // animals
                     worldMap.getPlantsAmount(), // plants
@@ -298,34 +303,6 @@ public class SimulationWindow {
                     );
             semaphore.release();
         });
-    }
-
-    // Aktualizacja etykiety `selectedAnimalPresenter` z aktualnymi pozycjami zwierząt
-    private void updateSelectedAnimalPresenter() {
-        if (worldMap == null || selectedAnimalPresenter == null) return;
-
-        // Pobierz listę wszystkich zwierząt
-        List<Animal> animals = worldMap.getAnimals();
-
-        // Jeśli lista jest pusta, wyświetl odpowiedni komunikat
-        if (animals.isEmpty()) {
-            selectedAnimalPresenter.setText("No animals on the map.");
-            return;
-        }
-
-        // Budowanie tekstu z pozycjami zwierząt
-        StringBuilder positionsBuilder = new StringBuilder("Current Animal Positions:\n");
-        animals.forEach(animal -> {
-            positionsBuilder.append("Position: ").append(animal.getPosition())
-                    .append("Energy: ").append(animal.getEnergy()).append(" ")
-                    .append("Children amnt: ").append(animal.childrenCount())
-                    .append("\n");
-        });
-        positionsBuilder.append("Amount of dead animals: ").append(worldMap.getLifeSpan().size());
-
-
-        // Ustawienie tekstu w etykiecie
-        selectedAnimalPresenter.setText(positionsBuilder.toString());
     }
 
     // Metody statystyk
@@ -399,5 +376,9 @@ public class SimulationWindow {
                 data.getNode().setVisible(false); // Wyłączenie kropek
             }
         }
+    }
+
+    public void saveData() throws IOException {
+        simulation.getStatsCollector().exportToCsv();
     }
 }

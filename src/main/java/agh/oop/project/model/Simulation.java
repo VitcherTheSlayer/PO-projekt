@@ -67,7 +67,7 @@ public abstract class Simulation {
     }
 
     public void run() throws InterruptedException {
-        while (day < 50 || !map.getAnimals().isEmpty()) {
+        while (day < 50 && !map.getAnimals().isEmpty()) {
 
             synchronized (this){
                 while (isPaused) {
@@ -102,5 +102,9 @@ public abstract class Simulation {
 
     public int getDay() {
         return day;
+    }
+
+    public StatsCollector getStatsCollector() {
+        return statsCollector;
     }
 }
