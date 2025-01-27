@@ -70,6 +70,10 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
         // 3. child count
         // 4. random
 
+        if(o == this){
+            return 0;
+        }
+
         int energyDiff = o.energy - energy;
         if(energyDiff != 0) {
             return energyDiff;
