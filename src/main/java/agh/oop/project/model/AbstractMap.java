@@ -97,11 +97,9 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
                 Animal second = it.next();
                 if (second.breedable()) {
                     Animal offspring = first.breedWith(second);
-                    if (offspring != null) { // Czsami null returnowało i był null pointer exp.
-                        addAnimal(offspring);
-                        first.addOfspring(offspring);
-                        second.addOfspring(offspring);
-                    }
+                    addAnimal(offspring);
+                    first.addOfspring(offspring);
+                    second.addOfspring(offspring);
                 }
             }
         }
@@ -188,7 +186,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected SortedSet<Animal> assureSetFor(Vector2d position) {
         SortedSet<Animal> animals = animalsMap.get(position);
         if (animals == null) {
-            animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+            animalsMap.put(position, new TreeSet<>());
             return animalsMap.get(position);
         }
         return animals;
