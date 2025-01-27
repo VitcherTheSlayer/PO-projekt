@@ -17,6 +17,8 @@ public abstract class Simulation {
     protected static AbstractMap map;
     private SimulationWindow window;
     protected int day = 1;
+    private volatile boolean isPaused = false;
+    private volatile boolean stopSimulation = false;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
@@ -35,8 +37,15 @@ public abstract class Simulation {
         return map;
     }
 
-    public void resume(){}
-    public void pause(){}
+    public void resume(){
+        synchronized (this) {
+            isPaused = false;
+            this.notifyAll();
+        }
+    }
+    public void pause(){
+        isPaused = true;
+    }
 
 
     public void createMapElements(){
@@ -57,7 +66,13 @@ public abstract class Simulation {
 
     public void run() throws InterruptedException {
         while (day < 50 || true) {
-            // Tutaj jakaś logia zmiany dnia czy coś
+
+            synchronized (this){
+                while (isPaused) {
+                    this.wait();
+                }
+            }
+
             dailyCycle();
 
             // latch to wait for map being drawn

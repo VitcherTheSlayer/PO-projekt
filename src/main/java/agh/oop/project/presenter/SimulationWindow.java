@@ -63,7 +63,7 @@ public class SimulationWindow {
             pauseButton.setSelected(false);
             System.out.println("simulation.resume();");
             simulationRunning = true;
-//          simulation.resume();
+            simulation.resume();
         }
 
     }
@@ -75,7 +75,7 @@ public class SimulationWindow {
             resumeButton.setSelected(false);
             System.out.println("simulation.pause();");
             simulationRunning = false;
-//          simulation.pause();
+            simulation.pause();
         }
 
     }
