@@ -18,7 +18,7 @@ public abstract class Simulation {
     private SimulationWindow window;
     protected int day = 1;
     private volatile boolean isPaused = false;
-    private final Object pauseLock = new Object();
+    private volatile boolean stopSimulation = false;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
@@ -38,9 +38,9 @@ public abstract class Simulation {
     }
 
     public void resume(){
-        synchronized (pauseLock) {
+        synchronized (this) {
             isPaused = false;
-            pauseLock.notifyAll();
+            this.notifyAll();
         }
     }
     public void pause(){
@@ -67,9 +67,9 @@ public abstract class Simulation {
     public void run() throws InterruptedException {
         while (day < 50 || true) {
 
-            synchronized (pauseLock) {
+            synchronized (this){
                 while (isPaused) {
-                    pauseLock.wait();
+                    this.wait();
                 }
             }
 
