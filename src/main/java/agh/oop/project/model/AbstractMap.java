@@ -1,8 +1,5 @@
 package agh.oop.project.model;
 
-import agh.oop.project.model.util.RandomPositionGenerator;
-import javafx.util.Pair;
-
 import java.util.*;
 
 public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
@@ -18,6 +15,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected static final int EQUATOR_AREA_PERCENT = 20;
     protected static final int EQUATOR_GROWTH_PERCENT = 80;
     private final UUID uuid = UUID.randomUUID();
+    private List<Integer> lifeSpan = new ArrayList<>();
 
     protected AbstractMap(Configuration configuration) {
         this.configuration = configuration;
@@ -99,9 +97,9 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
                 Animal second = it.next();
                 if (second.breedable()) {
                     Animal offspring = first.breedWith(second);
-                    if (offspring != null) { // Czsami null returnowało i był null pointer exp.
-                        addAnimal(offspring);
-                    }
+                    addAnimal(offspring);
+                    first.addOfspring(offspring);
+                    second.addOfspring(offspring);
                 }
             }
         }
@@ -175,12 +173,20 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         growGrass(configuration.plantGrowthPerDay());
     }
 
-    public void beforeEatUpdate(){}
+    public void beforeEatUpdate(int day){
+        for (Animal animal : getAnimals()) {
+            if (animal.getEnergy() <= 0) {
+                animal.die(day,"Starve");
+                lifeSpan.add(animal.getAge());
+                removeAnimal(animal);
+            }
+        }
+    }
 
     protected SortedSet<Animal> assureSetFor(Vector2d position) {
         SortedSet<Animal> animals = animalsMap.get(position);
         if (animals == null) {
-            animalsMap.put(position, new TreeSet<>(new AnimalEnergyComparator()));
+            animalsMap.put(position, new TreeSet<>());
             return animalsMap.get(position);
         }
         return animals;
@@ -212,4 +218,43 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return animalsMap;
     }
     public void mapChanged(AbstractMap worldMap, String message) {}
+
+    public List<Integer> getLifeSpan() {
+        return lifeSpan;
+    }
+
+    public int getAllFreeCells() {
+        int allFreeCells = (configuration.height()+1) * (configuration.width()+1);
+        allFreeCells -= grassMap.size();
+        for (SortedSet<Animal> animals : animalsMap.values()) {
+            if (!animals.isEmpty()) {
+                --allFreeCells;
+            }
+        }
+        return allFreeCells;
+    }
+
+    public double getAverageLifeSpan() {
+        if (lifeSpan.isEmpty()) {
+            return 0;
+        }
+
+        double sum = 0;
+        for (int life : lifeSpan) {
+            sum += life;
+        }
+        return sum / lifeSpan.size();
+    }
+
+    public double getAverageEnergy() {
+        int sum = 0;
+        for (Animal animal : getAnimals()) {
+            sum += animal.getEnergy();
+        }
+        return (double) sum / getAnimals().size();
+    }
+
+    public int getPlantsAmount() {
+        return grassMap.size();
+    }
 }

@@ -7,6 +7,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -40,6 +44,13 @@ public class SimulationWindow {
     private boolean animalsSelectable = false;
     private Stage stage;
 
+    // Elementy statystyk
+    private XYChart.Series<Number, Number> animalCountSeries = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> plantCountSeries = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> freeFieldSeries = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> avgEnergySeries = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> avgLifeSpanSeries = new XYChart.Series<>();
+
     @FXML
     private Label statisticsPresenter; // Do poprawki, narazie prowizorycznie
     @FXML
@@ -55,6 +66,19 @@ public class SimulationWindow {
     private ToggleButton startButton;
     @FXML
     private Label simulationStatusLabel;
+
+    // Elementy statystyk
+    @FXML
+    private LineChart<Number, Number> lineChart;
+
+    @FXML
+    private NumberAxis xAxis;
+
+    @FXML
+    private NumberAxis yAxis;
+
+    @FXML
+    private ComboBox<String> viewModeComboBox;
 
     @FXML
     private void onClickPlay() {
@@ -265,6 +289,13 @@ public class SimulationWindow {
         Platform.runLater(() -> {
             drawMapReforged(); // Rysowanie mapy
             updateSelectedAnimalPresenter(); // Aktualizacja etykiety z pozycjami zwierząt (debug)
+            updateStats(simulation.getDay(), // day
+                    worldMap.getAnimals().size(), // animals
+                    worldMap.getPlantsAmount(), // plants
+                    worldMap.getAllFreeCells(), // freeFields
+                    worldMap.getAverageEnergy(), // avgEnergy
+                    worldMap.getAverageLifeSpan() // avgLifeSpan
+                    );
             semaphore.release();
         });
     }
@@ -286,11 +317,87 @@ public class SimulationWindow {
         StringBuilder positionsBuilder = new StringBuilder("Current Animal Positions:\n");
         animals.forEach(animal -> {
             positionsBuilder.append("Position: ").append(animal.getPosition())
-                    .append(", Direction: ").append(animal.getRotation())
+                    .append("Energy: ").append(animal.getEnergy()).append(" ")
+                    .append("Children amnt: ").append(animal.childrenCount())
                     .append("\n");
         });
+        positionsBuilder.append("Amount of dead animals: ").append(worldMap.getLifeSpan().size());
+
 
         // Ustawienie tekstu w etykiecie
         selectedAnimalPresenter.setText(positionsBuilder.toString());
+    }
+
+    // Metody statystyk
+    public void initialize() {
+        // Dodanie serii do wykresu
+        animalCountSeries.setName("Animal Count");
+        plantCountSeries.setName("Plant Count");
+        freeFieldSeries.setName("Free Fields");
+        avgEnergySeries.setName("Average Energy");
+        avgLifeSpanSeries.setName("Average Lifespan");
+
+        lineChart.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgLifeSpanSeries);
+
+        // Wyłączenie symboli (kropek) na liniach
+        disableSymbols(animalCountSeries);
+        disableSymbols(plantCountSeries);
+        disableSymbols(freeFieldSeries);
+        disableSymbols(avgEnergySeries);
+        disableSymbols(avgLifeSpanSeries);
+
+        // Obsługa wyboru trybu wyświetlania
+        viewModeComboBox.setOnAction(e -> updateViewMode());
+    }
+
+    public void updateStats(int day, int animals, int plants, int freeFields, double avgEnergy, double avgLifeSpan) {
+        // Aktualizacja bieżącego dnia
+        int currentDay = simulation.getDay();
+
+        // Dodanie nowych danych
+        animalCountSeries.getData().add(new XYChart.Data<>(day, animals));
+        plantCountSeries.getData().add(new XYChart.Data<>(day, plants));
+        freeFieldSeries.getData().add(new XYChart.Data<>(day, freeFields));
+        avgEnergySeries.getData().add(new XYChart.Data<>(day, avgEnergy));
+        avgLifeSpanSeries.getData().add(new XYChart.Data<>(day, avgLifeSpan));
+
+        // Automatyczna zmiana zakresu osi X (dla ostatnich 100 dni)
+        if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
+            xAxis.setLowerBound(Math.max(0, currentDay - 100));
+            xAxis.setUpperBound(currentDay);
+        } else {
+            xAxis.setLowerBound(0);
+            xAxis.setUpperBound(currentDay);
+        }
+
+        // Wyłącz ponownie symbole po dodaniu nowych punktów
+        disableSymbols(animalCountSeries);
+        disableSymbols(plantCountSeries);
+        disableSymbols(freeFieldSeries);
+        disableSymbols(avgEnergySeries);
+        disableSymbols(avgLifeSpanSeries);
+
+        lineChart.setAnimated(true);
+    }
+
+    private void updateViewMode() {
+        int currentDay = simulation.getDay();
+        // Zmiana trybu wyświetlania
+        if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
+            xAxis.setLowerBound(Math.max(0, currentDay - 100));
+            xAxis.setUpperBound(currentDay);
+        } else {
+            xAxis.setLowerBound(0);
+            xAxis.setUpperBound(currentDay);
+        }
+    }
+
+    private void disableSymbols(XYChart.Series<Number, Number> series) {
+        series.getNode().lookup(".chart-series-line").setStyle("-fx-stroke-width: 2px;"); // Ustawienie grubości linii
+        for (XYChart.Data<Number, Number> data : series.getData()) {
+            if (data.getNode() != null) {
+                data.getNode().setVisible(false); // Wyłączenie kropek
+            }
+        }
     }
 }

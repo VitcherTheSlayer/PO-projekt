@@ -14,6 +14,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     public Animal(Genome genome, Vector2d position, Rotation rotation, AbstractMap map) {
         super(genome, position, rotation);
         this.map = map;
+        this.energy = map.configuration.initialEnergy();
     }
 
     public Animal(Genome genome, Vector2d position, Rotation rotation, AbstractMap map, int energy) {
@@ -24,6 +25,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     public Animal(int genomeLength, Vector2d position, Rotation rotation, AbstractMap map) {
         super(genomeLength, position, rotation);
         this.map = map;
+        this.energy = map.configuration.initialEnergy();
     }
 
     public int getEnergy() {
@@ -68,6 +70,10 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
         // 3. child count
         // 4. random
 
+        if(o == this){
+            return 0;
+        }
+
         int energyDiff = o.energy - energy;
         if(energyDiff != 0) {
             return energyDiff;
@@ -89,6 +95,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     @Override
     public Vector2d move(IMoveValidator moveValidator) {
         ++age;
+        --energy; // Dajmy że jeden zużywają na ruch
         return super.move(moveValidator);
     }
 
@@ -141,4 +148,10 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
         return count - 1;
     }
 
+    public int getAge() {
+        return age;
+    }
+    public void addOfspring(Animal animal) {
+        this.children.add(animal);
+    }
 }
