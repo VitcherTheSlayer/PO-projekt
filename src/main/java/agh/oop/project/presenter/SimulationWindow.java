@@ -2,7 +2,6 @@ package agh.oop.project.presenter;
 
 import agh.oop.project.model.*;
 import agh.oop.project.model.AbstractMap;
-import agh.oop.project.model.StatsCollector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -33,7 +32,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.*;
 import java.util.concurrent.Semaphore;
 
 public class SimulationWindow {
@@ -81,6 +79,12 @@ public class SimulationWindow {
     @FXML
     private Label simulationStatusLabel;
 
+    @FXML
+    private Animal choosenAnimal = null;
+
+    @FXML
+    final Canvas[] choosenAnimalHighlight = {null}; // Przechowuje aktualnie podświetloną komórkę
+
     // Elementy statystyk
     @FXML
     private LineChart<Number, Number> lineChart;
@@ -107,11 +111,6 @@ public class SimulationWindow {
             pauseButton.setSelected(false);
             System.out.println("simulation.resume();");
             simulationRunning = true;
-
-//            chooseAnimal.setDisable(true); // Zablokowanie przycisku "chooseAnimal"
-//            mapGrid.setOnMouseMoved(null);  // Usunięcie funkcji śledzenia myszy
-//            mapGrid.setOnMouseClicked(null);
-
             simulation.resume();
         }
 
@@ -186,8 +185,9 @@ public class SimulationWindow {
 
         mapGrid.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) { // Lewy przycisk myszy
-                double clickX = event.getSceneX();
-                double clickY = event.getSceneY();
+                Point2D localCoords = mapGrid.sceneToLocal(event.getSceneX(), event.getSceneY());
+                double clickX = localCoords.getX();
+                double clickY = localCoords.getY();
 
                 int clickedCellX = (int) (clickX / cellSize);
                 int clickedCellY = (int) (clickY / cellSize);
@@ -206,7 +206,9 @@ public class SimulationWindow {
                     // Ustawiamy, że komórka została wybrana
                     isCellSelected = true; // Blokujemy możliwość podświetlania innych komórek
 
-                    
+//                    updateAnimalData(worldMap.getFirstAnimalAt(new Vector2d(clickedCellX, clickedCellY)));
+                    choosenAnimal = worldMap.getFirstAnimalAt(new Vector2d(clickedCellX,clickedCellY));
+                    drawMapReforged();
                 } else {
                     if (activeHighlight[0] != null) {
                         mapGrid.getChildren().remove(activeHighlight[0]); // Usuwamy poprzednie podświetlenie
@@ -424,6 +426,15 @@ public class SimulationWindow {
             }
         }
 
+        //2.1 Rysuje podświetlenie wybranego animala
+        if (choosenAnimal != null && choosenAnimal.isAlive()) {
+            Vector2d position = choosenAnimal.getPosition();
+            choosenAnimalHighlight[0] = createHighlightCell(position.getX(), position.getY(), new Color(0.5,0,0.5,1));
+            mapGrid.getChildren().add(choosenAnimalHighlight[0]);
+            updateAnimalData(choosenAnimal);
+        }
+
+
         // 3. Rysuje trawe
         for (Map.Entry<Vector2d, Grass> entry : worldMap.getGrassMap().entrySet()) {
             Vector2d position = entry.getKey();
@@ -546,5 +557,29 @@ public class SimulationWindow {
 
     public void saveData() throws IOException {
         simulation.getStatsCollector().exportToCsv();
+    }
+
+    public void updateAnimalData(Animal animal) {
+        String genome = animal.getGenome().toString();
+        int energy = animal.getEnergy();
+        int eatenPlants = animal.getGrassEaten();
+        int childrenAmount = animal.childrenCount();
+        int descendantsCount = animal.descendantsCount();
+        int daysAlive = animal.getAge();
+        boolean isAlive = animal.isAlive();
+
+        if (descendantsCount < 0) {descendantsCount = 0;}
+
+        String text = String.format(
+                "Genome: %s\nEnergy: %d\nEaten Plants: %d\nChildren: %d\nDescendants: %d\nDays Alive: %d\nAlive: %s",
+                genome, energy, eatenPlants, childrenAmount, descendantsCount, daysAlive, isAlive ? "Yes" : "No"
+        );
+
+        // Przekazanie tekstu do metody updateLabelText
+        updateLabelText(text);
+    }
+
+    public void updateLabelText(String text) {
+        selectedAnimalPresenter.setText(text); // Zmiana tekstu Label
     }
 }

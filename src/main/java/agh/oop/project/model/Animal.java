@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     private int energy;
-    private AbstractMap map;
+    private final AbstractMap map;
     private int age = 0;
     private final List<Animal> children = new ArrayList<>();
     private int grassEaten = 0;
@@ -104,6 +104,10 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
         ++grassEaten;
     }
 
+    public int getGrassEaten() {
+        return grassEaten;
+    }
+
     public float energyFraction() {
         return Math.min(1.0f, (float)energy / (float)map.getConfiguration().initialEnergy());
     }
@@ -153,5 +157,9 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     }
     public void addOfspring(Animal animal) {
         this.children.add(animal);
+    }
+
+    public boolean isAlive() {
+        return deathTime == -1;
     }
 }

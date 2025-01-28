@@ -70,4 +70,17 @@ public class Genome implements Iterable<Integer> {
     public Iterator<Integer> iterator(int i) {
         return new GenomeIterator(this, i);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Genome: ");
+        for (int i = 0; i < values.size(); i++) {
+            sb.append(i + 1).append(values.get(i));
+            if (i < values.size() - 1) {
+                sb.append(", "); // Dodajemy przecinek, chyba że to ostatni element
+            }
+        }
+        return sb.toString();
+    }
+
 }
