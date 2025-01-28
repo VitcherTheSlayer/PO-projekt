@@ -88,8 +88,6 @@ public abstract class Simulation {
 
             dailyCycle(++day);
 
-            System.out.println("dupa dupa dupa dupa dupa dupa dupa");
-
             // semaphore to wait for map being draw
             window.mapChanged(semaphore);
             semaphore.acquire();
