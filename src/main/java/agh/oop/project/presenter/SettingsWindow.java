@@ -61,6 +61,8 @@ public class SettingsWindow {
     @FXML
     private Button startSimulationButton;
 
+    private File csv;
+
     private Stage stage;
 
     public void init(Stage stage) {
@@ -108,6 +110,8 @@ public class SettingsWindow {
         int swapMutationPercent = Integer.parseInt(swapMutationPercentTF.getText());
         int genomeLength = Integer.parseInt(genomeLengthTF.getText());
 
+        System.out.println(csv);
+
         return new Configuration(
                 height,
                 width,
@@ -123,7 +127,8 @@ public class SettingsWindow {
                 maxMutations,
                 mutationVariant,
                 swapMutationPercent,
-                genomeLength
+                genomeLength,
+                csv
         );
     }
 
@@ -180,5 +185,18 @@ public class SettingsWindow {
         simulation.createMapElements();
 
         simulationStage.show();
+    }
+
+    @FXML
+    private void selectCSV(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Simulation Stats");
+
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
+        fileChooser.getExtensionFilters().add(filter);
+
+        fileChooser.setInitialDirectory(Paths.get(".").toFile());
+
+        csv = fileChooser.showSaveDialog(null);
     }
 }
