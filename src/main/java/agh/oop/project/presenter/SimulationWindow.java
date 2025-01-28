@@ -439,7 +439,7 @@ public class SimulationWindow {
         }
 
         //2.1 Rysuje podświetlenie wybranego animala
-        if (choosenAnimal != null && choosenAnimal.isAlive()) {
+        if (choosenAnimal != null) {
             Vector2d position = choosenAnimal.getPosition();
             choosenAnimalHighlight[0] = createHighlightCell(position.getX(), position.getY(), new Color(0.5,0,0.5,1));
             mapGrid.getChildren().add(choosenAnimalHighlight[0]);
@@ -572,7 +572,7 @@ public class SimulationWindow {
     }
 
     public void updateAnimalData(Animal animal) {
-        String genome = animal.getGenome().toString();
+        Genome genome = animal.getGenome();
         int energy = animal.getEnergy();
         int eatenPlants = animal.getGrassEaten();
         int childrenAmount = animal.childrenCount();
@@ -582,10 +582,13 @@ public class SimulationWindow {
 
         if (descendantsCount < 0) {descendantsCount = 0;}
 
+        System.out.println(animal.getActiveGeneIdx());
+
         String text = String.format(
-                "Genome: %s\nEnergy: %d\nEaten Plants: %d\nChildren: %d\nDescendants: %d\nDays Alive: %d\nAlive: %s",
-                genome, energy, eatenPlants, childrenAmount, descendantsCount, daysAlive, isAlive ? "Yes" : "No"
+                "Genome: %s\nEnergy: %d\nEaten Plants: %d\nChildren: %d\nDescendants: %d\nDays Alive: %d\nAlive: %s\nDeath Day: %s",
+                genome.toString(animal.getActiveGeneIdx()), energy, eatenPlants, childrenAmount, descendantsCount, daysAlive, isAlive ? "Yes" : "No", animal.getDeathTime()
         );
+
 
         // Przekazanie tekstu do metody updateLabelText
         updateLabelText(text);
