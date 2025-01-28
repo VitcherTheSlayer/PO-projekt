@@ -41,7 +41,7 @@ public class SimulationWindow {
     private static final int CELL_SIZE_MAX = 50;
     private static final int MAX_AXES_CELL_SIZE = 13;
 
-    private int cellSize = 50;
+    private final int cellSize = 50;
     private final Vector2d xDir = Rotation.EAST.nextMove();
     private final Vector2d yDir = Rotation.NORTH.nextMove();
 
@@ -50,17 +50,17 @@ public class SimulationWindow {
     private boolean simulationRunning = false;
     private Vector2d owlbearPosition;
 
-    private int showAxis = 0;
-    private Node lastNode = null;
-    private boolean animalsSelectable = false;
+    private final int showAxis = 0;
+    private final Node lastNode = null;
+    private final boolean animalsSelectable = false;
     private Stage stage;
 
     // Elementy statystyk
-    private XYChart.Series<Number, Number> animalCountSeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> plantCountSeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> freeFieldSeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> avgEnergySeries = new XYChart.Series<>();
-    private XYChart.Series<Number, Number> avgLifeSpanSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> animalCountSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> plantCountSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> freeFieldSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> avgEnergySeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> avgLifeSpanSeries = new XYChart.Series<>();
 
     @FXML
     private Label statisticsPresenter; // Do poprawki, narazie prowizorycznie
@@ -98,12 +98,20 @@ public class SimulationWindow {
     private Button saveStatistics;
 
     @FXML
+    private boolean isCellSelected = false;
+
+    @FXML
     private void onClickPlay() {
         if (!simulationRunning) {
             resumeButton.setSelected(true);
             pauseButton.setSelected(false);
             System.out.println("simulation.resume();");
             simulationRunning = true;
+
+//            chooseAnimal.setDisable(true); // Zablokowanie przycisku "chooseAnimal"
+//            mapGrid.setOnMouseMoved(null);  // Usunięcie funkcji śledzenia myszy
+//            mapGrid.setOnMouseClicked(null);
+
             simulation.resume();
         }
 
@@ -141,24 +149,13 @@ public class SimulationWindow {
     @FXML
     public void chooseAnimal() {
         final Canvas[] activeHighlight = {null}; // Przechowuje aktualnie podświetloną komórkę
-
+        isCellSelected = false;
 
         mapGrid.setOnMouseMoved(event -> {
             // Śledzenie współrzędnych myszy
             Point2D localCoords = mapGrid.sceneToLocal(event.getSceneX(), event.getSceneY());
             double localX = localCoords.getX();
             double localY = localCoords.getY();
-
-            double mouseX = event.getSceneX();
-            double mouseY = event.getSceneY();
-
-            // Uzyskanie współrzędnych lewego górnego rogu mapGrid względem ekranu
-            double gridOffsetX = mapGrid.localToScreen(mapGrid.getBoundsInLocal()).getMinX();
-            double gridOffsetY = mapGrid.localToScreen(mapGrid.getBoundsInLocal()).getMinY();
-
-            // Uwzględniamy przesunięcie lewego górnego rogu mapGrid
-            double adjustedX = localX + gridOffsetX;
-            double adjustedY = localY + gridOffsetY;
 
             int cellX = (int) (localX / cellSize);
             int cellY = (int) (localY / cellSize);
@@ -171,9 +168,10 @@ public class SimulationWindow {
                 return; // Poza mapą - ignorujemy
             }
 
-            if (activeHighlight[0] == null ||
+            if ((activeHighlight[0] == null ||
                     cellX != activeHighlight[0].getTranslateX() / cellSize ||
-                    cellY != activeHighlight[0].getTranslateY() / cellSize) {
+                    cellY != activeHighlight[0].getTranslateY() / cellSize) &&
+                    !isCellSelected) {
 
                 // Usunięcie poprzedniego podświetlenia
                 if (activeHighlight[0] != null) {
@@ -181,7 +179,7 @@ public class SimulationWindow {
                 }
 
                 // Utworzenie nowego podświetlenia
-                activeHighlight[0] = createHighlightCell(cellX, cellY);
+                activeHighlight[0] = createHighlightCell(cellX, cellY,new Color(0, 0, 1, 1.0));
                 mapGrid.getChildren().add(activeHighlight[0]);
             }
         });
@@ -194,7 +192,32 @@ public class SimulationWindow {
                 int clickedCellX = (int) (clickX / cellSize);
                 int clickedCellY = (int) (clickY / cellSize);
 
-                System.out.println("Kliknięto w komórkę: X = " + clickedCellX + ", Y = " + clickedCellY);
+                // Warunek: jeśli spełniony, podświetlamy komórkę na zielono i blokujemy dalsze podświetlanie
+                if (shouldHighlightGreen(clickedCellX, clickedCellY)) {
+                    // Jeśli spełniony warunek, podświetlamy komórkę na zielono
+                    if (activeHighlight[0] != null) {
+                        mapGrid.getChildren().remove(activeHighlight[0]); // Usuwamy poprzednie podświetlenie
+                    }
+
+                    // Tworzymy nową komórkę na zielono
+                    activeHighlight[0] = createHighlightCell(clickedCellX, clickedCellY,new Color(0,1,0,1));
+                    mapGrid.getChildren().add(activeHighlight[0]);
+
+                    // Ustawiamy, że komórka została wybrana
+                    isCellSelected = true; // Blokujemy możliwość podświetlania innych komórek
+
+                    
+                } else {
+                    if (activeHighlight[0] != null) {
+                        mapGrid.getChildren().remove(activeHighlight[0]); // Usuwamy poprzednie podświetlenie
+                    }
+                    activeHighlight[0] = createHighlightCell(clickedCellX, clickedCellY,new Color(1,0,0,1));
+                    mapGrid.getChildren().add(activeHighlight[0]);
+
+                    isCellSelected = true;
+                }
+                mapGrid.setOnMouseMoved(null);  // Usuwamy obsługę ruchu myszy
+                mapGrid.setOnMouseClicked(null); // Usuwamy obsługę wyjścia myszy
             }
         });
 
@@ -209,7 +232,7 @@ public class SimulationWindow {
     }
 
     // Funkcja tworząca podświetlenie dla określonej komórki
-    private Canvas createHighlightCell(int cellX, int cellY) {
+    private Canvas createHighlightCell(int cellX, int cellY,Color color) {
         Canvas highlightCanvas = new Canvas(cellSize, cellSize);
 
         // Pozycjonowanie Canvasa na odpowiedniej komórce
@@ -222,56 +245,24 @@ public class SimulationWindow {
         // Gradient od środka na zewnątrz
         gc.setFill(new LinearGradient(
                 0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(0, 0, 255, 0.3)), // Początek: półprzezroczysty niebieski
-                new Stop(1, Color.TRANSPARENT)         // Koniec: przezroczysty
+                new Stop(0, color.deriveColor(0, 1, 1, 0.3)), // Początek: półprzezroczysty kolor
+                new Stop(1, Color.TRANSPARENT)               // Koniec: przezroczysty
         ));
 
         gc.fillRect(0, 0, cellSize, cellSize);
 
         // Ramka w mocnym niebieskim kolorze
-        gc.setStroke(Color.BLUE);
+        gc.setStroke(color);
         gc.setLineWidth(3); // Grubość krawędzi
         gc.strokeRect(0, 0, cellSize, cellSize);
 
         return highlightCanvas;
     }
 
-
-
-
-    public void lightUpNeutralCell(double x, double y) {
-        System.out.println("Działa");
-        // Rozmiar jednej komórki (zakładamy, że masz jej rozmiar w zmiennej cellSize)
-//        double cellSize = 50.0;
-
-        // Tworzymy nowy Canvas do rysowania
-        Canvas highlightCanvas = new Canvas(cellSize, cellSize);
-
-        // Pozycjonujemy Canvas w odpowiednim miejscu na Gridzie
-        highlightCanvas.setTranslateX(((int) x/cellSize)*cellSize);
-        highlightCanvas.setTranslateY(((int) y/cellSize)*cellSize);
-        System.out.println(((int) x/cellSize)*cellSize);
-
-        // Pobieramy GraphicsContext do rysowania
-        GraphicsContext gc = highlightCanvas.getGraphicsContext2D();
-
-        // Rysowanie gradientowej ramki
-        gc.setFill(new LinearGradient(
-                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(0, 0, 255, 0.5)),  // Początek: półprzezroczysty niebieski
-                new Stop(1, Color.TRANSPARENT)           // Koniec: przezroczysty
-        ));
-
-        // Rysowanie wypełnienia z gradientem
-        gc.fillRect(0, 0, cellSize, cellSize);
-
-        // Dodanie krawędzi w mocnym niebieskim kolorze
-        gc.setStroke(Color.BLUE);
-        gc.setLineWidth(3); // Grubość krawędzi
-        gc.strokeRect(0, 0, cellSize, cellSize);
-
-        // Dodajemy Canvas do layoutu (np. do mapGrid lub AnchorPane)
-        mapGrid.getChildren().add(highlightCanvas);
+    // Przykładowy warunek sprawdzający, czy kliknięta komórka spełnia wymagania
+    private boolean shouldHighlightGreen(int x, int y) {
+        Animal animal = worldMap.getFirstAnimalAt(new Vector2d(x, y));
+        return animal != null;
     }
 
     public void setSimulation(Simulation simulation) {
@@ -337,8 +328,7 @@ public class SimulationWindow {
                 mapGrid.add(coordinatesLabel, x - lowerLeft.getX(), y - lowerLeft.getY()); // Dodanie do siatki
 
                 // Sprawdzamy, czy mapą jest OwlbearMap
-                if (worldMap instanceof OwlbearMap) {
-                    OwlbearMap map = (OwlbearMap) worldMap;
+                if (worldMap instanceof OwlbearMap map) {
                     if (map.getHuntingGround().test(position)) {
                         // Jeśli jest to instancja OwlbearMap, dodajemy RedArea
                         ImageView redAreaView = new ImageView(RedArea);
