@@ -15,7 +15,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     protected static final int EQUATOR_AREA_PERCENT = 20;
     protected static final int EQUATOR_GROWTH_PERCENT = 80;
     private final UUID uuid = UUID.randomUUID();
-    private List<Integer> lifeSpan = new ArrayList<>();
+    private final List<Integer> lifeSpan = new ArrayList<>();
 
     protected AbstractMap(Configuration configuration) {
         this.configuration = configuration;
@@ -43,9 +43,9 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     }
 
     public void removeAnimal(Animal animal) {
-        SortedSet<Animal> animals = assureSetFor(animal.getPosition());
-        animals.remove(animal);
-        if(animals.isEmpty()) {
+        SortedSet<Animal> animalsAtPos = assureSetFor(animal.getPosition());
+        animalsAtPos.remove(animal);
+        if(animalsAtPos.isEmpty()) {
             animalOccupiedPositions.remove(animal.getPosition());
         }
     }
@@ -54,14 +54,13 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return animalsMap
                 .values()
                 .stream()
-                //.map(set -> set.stream().toList())
                 .flatMap(SortedSet::stream)
                 .toList();
     }
 
     public void moveAnimal(Animal animal) {
         removeAnimal(animal);
-        Vector2d newPos = animal.move(this);
+        animal.move(this);
         addAnimal(animal);
     }
 
@@ -93,13 +92,16 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
             SortedSet<Animal> currentSet = assureSetFor(pos);
             if(currentSet.size() >= 2){
                 var it = currentSet.iterator();
+
                 Animal first = it.next();
                 Animal second = it.next();
-                if (second.breedable()) {
+
+                if (second.breedable()) { // implies first.breedable()
                     Animal offspring = first.breedWith(second);
                     addAnimal(offspring);
-                    first.addOfspring(offspring);
-                    second.addOfspring(offspring);
+
+                    first.addOffspring(offspring);
+                    second.addOffspring(offspring);
                 }
             }
         }
@@ -151,7 +153,6 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         // Dodaje trawe na równiku
         Collections.shuffle(freeEquatorPositions);
         for (int i = 0; i < equatorGrassCount; i++) {
-            if (i >= freeEquatorPositions.size()) break; // Brak wolnych pozycji
             Vector2d position = freeEquatorPositions.get(i);
             grassMap.put(position, new Grass(position));
         }
@@ -159,7 +160,6 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         // Dodaje trawe poza równikiem
         Collections.shuffle(freeOtherPositions);
         for (int i = 0; i < otherGrassCount; i++) {
-            if (i >= freeOtherPositions.size()) break; // Brak wolnych pozycji
             Vector2d position = freeOtherPositions.get(i);
             grassMap.put(position, new Grass(position));
         }
@@ -204,10 +204,6 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return new Boundary(boundary.lowerLeft(), boundary.upperRight());
     }
 
-    public UUID getId() {
-        return uuid;
-    }
-
     public Map<Vector2d, Grass> getGrassMap() {
         return grassMap;
     }
@@ -219,67 +215,12 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     }
     public void mapChanged(AbstractMap worldMap, String message) {}
 
-    public List<Integer> getLifeSpan() {
-        return lifeSpan;
-    }
-
-    public int getAllFreeCells() {
-        int allFreeCells = (configuration.height()+1) * (configuration.width()+1);
-        allFreeCells -= grassMap.size();
-        for (SortedSet<Animal> animals : animalsMap.values()) {
-            if (!animals.isEmpty()) {
-                --allFreeCells;
-            }
-        }
-        return allFreeCells;
-    }
-
-    public double getAverageLifeSpan() {
-        if (lifeSpan.isEmpty()) {
-            return 0;
-        }
-
-        double sum = 0;
-        for (int life : lifeSpan) {
-            sum += life;
-        }
-        return sum / lifeSpan.size();
-    }
-
-    public double getAverageEnergy() {
-        int sum = 0;
-        for (Animal animal : getAnimals()) {
-            sum += animal.getEnergy();
-        }
-        return (double) sum / getAnimals().size();
-    }
-
-    public int getPlantsAmount() {
-        return grassMap.size();
-    }
-
     public List<Animal> getMostPopularGenome() {
         List<Animal> animals = getAnimals();
-
-        Map<Genome, Integer> genomeCount = new HashMap<>();
-
-        for (Animal animal : animals) {
-            Genome genome = animal.getGenome();
-            genomeCount.put(genome, genomeCount.getOrDefault(genome, 0) + 1);
-        }
-
-        int maxCount = genomeCount.values().stream().max(Integer::compare).orElse(0);
-
-        List<Genome> mostPopularGenomes = genomeCount.entrySet().stream()
-                .filter(entry -> entry.getValue() == maxCount)
-                .map(Map.Entry::getKey)
-                .toList();
-
-        Random rng = new Random();
-        Genome chosenGenome = mostPopularGenomes.get(rng.nextInt(mostPopularGenomes.size()));
+        Genome dominantGenome = getStatistics().dominantGenome();
 
         return animals.stream()
-                .filter(animal -> animal.getGenome().equals(chosenGenome))
+                .filter(animal -> animal.getGenome().equals(dominantGenome))
                 .toList();
 	}
     public Statistics getStatistics() {

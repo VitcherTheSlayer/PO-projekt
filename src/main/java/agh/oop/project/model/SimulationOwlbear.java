@@ -24,10 +24,5 @@ public class SimulationOwlbear extends Simulation {
         map.huntAnimals(day); // Owlbear poluje
         map.afterPreyUpdate();
     }
-
-    @Override
-    public void createMapElements(){
-        super.createMapElements();
-    }
 }
 

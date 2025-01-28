@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 
 public class RandomPositionGenerator implements Iterable<Vector2d> {
     private class Iterator implements java.util.Iterator<Vector2d>{
-        private RandomPositionGenerator parent;
+        private final RandomPositionGenerator parent;
 
         public Iterator(RandomPositionGenerator parent){
             this.parent = parent;
@@ -26,9 +26,9 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
     }
 
     private List<Vector2d> positions = new ArrayList<>();
-    private int size;
+    private final int size;
     private int count = 0;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public RandomPositionGenerator(int maxWidth, int maxHeight, int count){
         this(maxWidth, maxHeight, count, null);

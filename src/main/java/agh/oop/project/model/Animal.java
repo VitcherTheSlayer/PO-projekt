@@ -65,6 +65,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     @Override
     public int compareTo(Animal o) {
         // ordered by:
+        // 0. the same object
         // 1. more energetic
         // 2. older
         // 3. child count
@@ -155,7 +156,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     public int getAge() {
         return age;
     }
-    public void addOfspring(Animal animal) {
+    public void addOffspring(Animal animal) {
         this.children.add(animal);
     }
 

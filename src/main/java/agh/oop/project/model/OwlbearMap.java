@@ -8,7 +8,7 @@ import java.util.SortedSet;
 
 public class OwlbearMap extends GlobeMap {
     protected final Boundary huntingGround;
-    private Owlbear owlbear;
+    private final Owlbear owlbear;
 
     protected OwlbearMap(Configuration configuration) {
         super(configuration);

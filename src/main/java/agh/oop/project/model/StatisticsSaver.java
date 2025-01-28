@@ -1,15 +1,10 @@
 package agh.oop.project.model;
 
-import javafx.stage.FileChooser;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
-public class StatsCollector {
+public class StatisticsSaver {
     private final File file;
 
     private static final String dayLabel = "Day";
@@ -21,7 +16,7 @@ public class StatsCollector {
     private static final String averageLifespanLabel = "Average Lifespan";
     private static final String averageChildrenCountLabel = "Average Children Count";
 
-    public StatsCollector(File file) throws IOException {
+    public StatisticsSaver(File file) throws IOException {
         this.file = file;
 		
         try(FileWriter fileWriter = new FileWriter(file)) {
