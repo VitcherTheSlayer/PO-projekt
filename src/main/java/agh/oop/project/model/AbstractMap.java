@@ -281,5 +281,46 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return animals.stream()
                 .filter(animal -> animal.getGenome().equals(chosenGenome))
                 .toList();
+	}
+    public Statistics getStatistics() {
+        List<Animal> animals = getAnimals();
+
+        int freeFields = (configuration.height()+1) * (configuration.width()+1)
+                - grassMap.size()
+                - animalOccupiedPositions.size();
+
+        Map<Genome, Integer> genomeCounts = new HashMap<>();
+        for(Animal animal : animals) {
+            Integer count = Optional.ofNullable(genomeCounts.get(animal.getGenome())).orElse(0) + 1;
+            genomeCounts.put(animal.getGenome(), count);
+        }
+        Genome dominantGenome = genomeCounts.entrySet().stream()
+                .max(Comparator.comparingInt(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        double avgEnergy = (double)animals.stream()
+                .map(Animal::getEnergy)
+                .reduce(0, Integer::sum)
+                / animals.size();
+
+        double avgLifespan = (double)lifeSpan.stream()
+                .reduce(0, Integer::sum)
+                / lifeSpan.size();
+
+        double avgChildCount = (double)animals.stream()
+                .map(Animal::childrenCount)
+                .reduce(0, Integer::sum)
+                / animals.size();
+
+        return new Statistics(
+                animals.size(),
+                grassMap.size(),
+                freeFields,
+                dominantGenome,
+                avgEnergy,
+                avgLifespan,
+                avgChildCount
+        );
     }
 }

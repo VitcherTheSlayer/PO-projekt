@@ -23,7 +23,7 @@ public class StatsCollector {
 
     public StatsCollector(File file) throws IOException {
         this.file = file;
-
+		
         try(FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write("%s,%s,%s,%s,%s,%s,%s,%s\n".formatted(
                     dayLabel,
@@ -34,6 +34,23 @@ public class StatsCollector {
                     averageEnergyLabel,
                     averageLifespanLabel,
                     averageChildrenCountLabel
+            ));
+            fileWriter.flush();
+        }
+        catch (NullPointerException ignored) {}
+    }
+
+    public void saveDay(int day, Statistics stats) throws IOException {
+        try (FileWriter fileWriter = new FileWriter(file, true)) {
+            fileWriter.append("%d,%d,%d,%d,%s,%.3f,%.3f,%.3f\n".formatted(
+                    day,
+                    stats.animalCount(),
+                    stats.plantCount(),
+                    stats.freeFieldsCount(),
+                    stats.dominantGenome().toString(),
+                    stats.averageEnergy(),
+                    stats.averageLifespan(),
+                    stats.averageChildCount()
             ));
             fileWriter.flush();
         }

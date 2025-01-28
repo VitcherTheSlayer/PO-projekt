@@ -2,6 +2,7 @@ package agh.oop.project.model;
 
 import agh.oop.project.presenter.SimulationWindow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,17 +15,17 @@ public abstract class Simulation {
     protected final Configuration configuration;
     private final List<Animal> animals = new ArrayList<>();
     private static final Vector2d VECTORZERO =  new Vector2d(0,0);
-    protected static AbstractMap map;
+    protected AbstractMap map;
     private SimulationWindow window;
     protected int day = 1;
     private volatile boolean isPaused = false;
     private volatile boolean stopSimulation = false;
     StatsCollector statsCollector;
 
-    public Simulation(Configuration configuration) {
+    public Simulation(Configuration configuration) throws IOException {
         this.configuration = configuration;
         map = createMap(configuration);
-        this.statsCollector = new StatsCollector(map);
+        this.statsCollector = new StatsCollector(configuration.csv());
     }
 
     protected abstract void specificDailyLogic();
@@ -66,8 +67,17 @@ public abstract class Simulation {
         }
     }
 
-    public void run() throws InterruptedException {
-        while (day < 50 && !map.getAnimals().isEmpty()) {
+    public void run() throws InterruptedException, IOException {
+        // first draw
+        Semaphore semaphore = new Semaphore(0);
+        window.mapChanged(semaphore);
+        semaphore.acquire();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        while (!map.getAnimals().isEmpty()) {
 
             synchronized (this){
                 while (isPaused) {
@@ -77,8 +87,7 @@ public abstract class Simulation {
 
             dailyCycle(day);
 
-            // latch to wait for map being drawn
-            Semaphore semaphore = new Semaphore(0);
+            // semaphore to wait for map being draw
             window.mapChanged(semaphore);
             semaphore.acquire();
             try {
@@ -90,9 +99,9 @@ public abstract class Simulation {
         }
     }
 
-    private void dailyCycle(int day) {
+    private void dailyCycle(int day) throws IOException {
         specificDailyLogic();
-        statsCollector.addData(map,day);
+        statsCollector.saveDay(day, map.getStatistics());
         map.beforeEatUpdate(day);
         map.growGrass(configuration.plantGrowthPerDay());
         map.moveAnimals();

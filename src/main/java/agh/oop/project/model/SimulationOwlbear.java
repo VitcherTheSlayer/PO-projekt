@@ -2,12 +2,13 @@ package agh.oop.project.model;
 
 import agh.oop.project.model.util.RandomPositionGenerator;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class SimulationOwlbear extends Simulation {
     private Owlbear owlbear;
     private OwlbearMap map;
-    public SimulationOwlbear(Configuration configuration) {
+    public SimulationOwlbear(Configuration configuration) throws IOException {
         super(configuration);
     }
 
