@@ -76,7 +76,7 @@ public abstract class Simulation {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        while (day < 50 && !map.getAnimals().isEmpty()) {
+        while (!map.getAnimals().isEmpty()) {
 
             synchronized (this){
                 while (isPaused) {
