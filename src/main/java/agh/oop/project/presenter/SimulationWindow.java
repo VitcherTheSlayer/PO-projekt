@@ -115,7 +115,7 @@ public class SimulationWindow {
     private Button showMostPopularGenom;
 
     @FXML
-    private Label mostPopularGenomLabel;
+    private Label dominantGenomeLabel;
 
     @FXML
     private void onClickPlay() {
@@ -288,7 +288,7 @@ public class SimulationWindow {
     public void init(Stage stage) {
         this.stage = stage;
 
-        this.stage.setOnCloseRequest(event -> {
+        stage.setOnCloseRequest(event -> {
             closed = true;
         });
 
@@ -532,6 +532,7 @@ public class SimulationWindow {
             avgLifeSpanSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageLifespan()));
         }
         avgChildCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageChildCount()));
+        dominantGenomeLabel.setText(stats.dominantGenome().toString());
 
 
         // Automatyczna zmiana zakresu osi X (dla ostatnich 100 dni)

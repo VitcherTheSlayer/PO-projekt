@@ -48,9 +48,10 @@
                                     </FXCollections>
                                 </items>
                             </ComboBox>
-                            <!-- Zapis  statystyk -->
-                            <Button fx:id="saveStatistics" onAction="#saveData" text="Zapisz dane" >
-                            </Button>
+                        </HBox>
+                        <HBox>
+                            <Label text="Dominujący Genom: "/>
+                            <Label fx:id="dominantGenomeLabel"/>
                         </HBox>
                     </children>
                 </VBox>
