@@ -6,9 +6,12 @@ import agh.oop.project.model.StatsCollector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -18,8 +21,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
@@ -34,7 +41,7 @@ public class SimulationWindow {
     private static final int CELL_SIZE_MAX = 50;
     private static final int MAX_AXES_CELL_SIZE = 13;
 
-    private int cellSize = 10;
+    private int cellSize = 50;
     private final Vector2d xDir = Rotation.EAST.nextMove();
     private final Vector2d yDir = Rotation.NORTH.nextMove();
 
@@ -59,6 +66,9 @@ public class SimulationWindow {
     private Label statisticsPresenter; // Do poprawki, narazie prowizorycznie
     @FXML
     private Label selectedAnimalPresenter; // Do poprawki, narazie prowizorycznie
+
+    @FXML
+    private Button chooseAnimal;
 
     @FXML
     private GridPane mapGrid;
@@ -128,6 +138,142 @@ public class SimulationWindow {
         }
     }
 
+    @FXML
+    public void chooseAnimal() {
+        final Canvas[] activeHighlight = {null}; // Przechowuje aktualnie podświetloną komórkę
+
+
+        mapGrid.setOnMouseMoved(event -> {
+            // Śledzenie współrzędnych myszy
+            Point2D localCoords = mapGrid.sceneToLocal(event.getSceneX(), event.getSceneY());
+            double localX = localCoords.getX();
+            double localY = localCoords.getY();
+
+            double mouseX = event.getSceneX();
+            double mouseY = event.getSceneY();
+
+            // Uzyskanie współrzędnych lewego górnego rogu mapGrid względem ekranu
+            double gridOffsetX = mapGrid.localToScreen(mapGrid.getBoundsInLocal()).getMinX();
+            double gridOffsetY = mapGrid.localToScreen(mapGrid.getBoundsInLocal()).getMinY();
+
+            // Uwzględniamy przesunięcie lewego górnego rogu mapGrid
+            double adjustedX = localX + gridOffsetX;
+            double adjustedY = localY + gridOffsetY;
+
+            int cellX = (int) (localX / cellSize);
+            int cellY = (int) (localY / cellSize);
+
+            if (cellX < 0 || cellX >= mapGrid.getColumnCount() || cellY < 0 || cellY >= mapGrid.getRowCount()) {
+                if (activeHighlight[0] != null) {
+                    mapGrid.getChildren().remove(activeHighlight[0]);
+                    activeHighlight[0] = null; // Resetujemy zmienną aktywnego podświetlenia
+                }
+                return; // Poza mapą - ignorujemy
+            }
+
+            if (activeHighlight[0] == null ||
+                    cellX != activeHighlight[0].getTranslateX() / cellSize ||
+                    cellY != activeHighlight[0].getTranslateY() / cellSize) {
+
+                // Usunięcie poprzedniego podświetlenia
+                if (activeHighlight[0] != null) {
+                    mapGrid.getChildren().remove(activeHighlight[0]);
+                }
+
+                // Utworzenie nowego podświetlenia
+                activeHighlight[0] = createHighlightCell(cellX, cellY);
+                mapGrid.getChildren().add(activeHighlight[0]);
+            }
+        });
+
+        mapGrid.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) { // Lewy przycisk myszy
+                double clickX = event.getSceneX();
+                double clickY = event.getSceneY();
+
+                int clickedCellX = (int) (clickX / cellSize);
+                int clickedCellY = (int) (clickY / cellSize);
+
+                System.out.println("Kliknięto w komórkę: X = " + clickedCellX + ", Y = " + clickedCellY);
+            }
+        });
+
+        // Dodajemy zdarzenie wyjścia myszy poza mapę
+        mapGrid.setOnMouseExited(event -> {
+            // Gdy myszka opuści mapę, usuwamy podświetlenie
+            if (activeHighlight[0] != null) {
+                mapGrid.getChildren().remove(activeHighlight[0]);
+                activeHighlight[0] = null; // Resetujemy zmienną aktywnego podświetlenia
+            }
+        });
+    }
+
+    // Funkcja tworząca podświetlenie dla określonej komórki
+    private Canvas createHighlightCell(int cellX, int cellY) {
+        Canvas highlightCanvas = new Canvas(cellSize, cellSize);
+
+        // Pozycjonowanie Canvasa na odpowiedniej komórce
+        highlightCanvas.setTranslateX(cellX * cellSize + 0.400001525878906*cellX);
+        highlightCanvas.setTranslateY(cellY * cellSize + 0.400001525878906*cellY);
+
+        // Rysowanie gradientowej ramki
+        GraphicsContext gc = highlightCanvas.getGraphicsContext2D();
+
+        // Gradient od środka na zewnątrz
+        gc.setFill(new LinearGradient(
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(0, 0, 255, 0.3)), // Początek: półprzezroczysty niebieski
+                new Stop(1, Color.TRANSPARENT)         // Koniec: przezroczysty
+        ));
+
+        gc.fillRect(0, 0, cellSize, cellSize);
+
+        // Ramka w mocnym niebieskim kolorze
+        gc.setStroke(Color.BLUE);
+        gc.setLineWidth(3); // Grubość krawędzi
+        gc.strokeRect(0, 0, cellSize, cellSize);
+
+        return highlightCanvas;
+    }
+
+
+
+
+    public void lightUpNeutralCell(double x, double y) {
+        System.out.println("Działa");
+        // Rozmiar jednej komórki (zakładamy, że masz jej rozmiar w zmiennej cellSize)
+//        double cellSize = 50.0;
+
+        // Tworzymy nowy Canvas do rysowania
+        Canvas highlightCanvas = new Canvas(cellSize, cellSize);
+
+        // Pozycjonujemy Canvas w odpowiednim miejscu na Gridzie
+        highlightCanvas.setTranslateX(((int) x/cellSize)*cellSize);
+        highlightCanvas.setTranslateY(((int) y/cellSize)*cellSize);
+        System.out.println(((int) x/cellSize)*cellSize);
+
+        // Pobieramy GraphicsContext do rysowania
+        GraphicsContext gc = highlightCanvas.getGraphicsContext2D();
+
+        // Rysowanie gradientowej ramki
+        gc.setFill(new LinearGradient(
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(0, 0, 255, 0.5)),  // Początek: półprzezroczysty niebieski
+                new Stop(1, Color.TRANSPARENT)           // Koniec: przezroczysty
+        ));
+
+        // Rysowanie wypełnienia z gradientem
+        gc.fillRect(0, 0, cellSize, cellSize);
+
+        // Dodanie krawędzi w mocnym niebieskim kolorze
+        gc.setStroke(Color.BLUE);
+        gc.setLineWidth(3); // Grubość krawędzi
+        gc.strokeRect(0, 0, cellSize, cellSize);
+
+        // Dodajemy Canvas do layoutu (np. do mapGrid lub AnchorPane)
+        mapGrid.getChildren().add(highlightCanvas);
+    }
+
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
         this.simulation.setSimulationWindow(this);
@@ -135,6 +281,8 @@ public class SimulationWindow {
 
     public void init(Stage stage) {
         this.stage = stage;
+
+        chooseAnimal.disableProperty().bind(pauseButton.selectedProperty().not());
     }
 
     public void setWorldMap(AbstractMap map){
@@ -150,10 +298,10 @@ public class SimulationWindow {
         Vector2d upperRight = bounds.upperRight();
 
         for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
-            mapGrid.getColumnConstraints().add(new ColumnConstraints(50));
+            mapGrid.getColumnConstraints().add(new ColumnConstraints(cellSize));
         }
         for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
-            mapGrid.getRowConstraints().add(new RowConstraints(50));
+            mapGrid.getRowConstraints().add(new RowConstraints(cellSize));
         }
 
         // 0.Pobieram obrazki

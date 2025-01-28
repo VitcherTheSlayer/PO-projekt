@@ -53,7 +53,13 @@
                             </Button>
                         </HBox>
 
-                        <Label text="Wybrany zwierzak:" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                        <Region prefHeight="15.0" />
+                        <!-- Wybór zwierzaka -->
+                        <HBox alignment="CENTER" spacing="20">
+                            <Label text="Wybrany zwierzak:" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                            <Button fx:id="chooseAnimal" onAction="#chooseAnimal" text="Wybierz zwierzaka" >
+                            </Button>
+                        </HBox>
                         <Label fx:id="selectedAnimalPresenter" text="Dane animala" />
                     </children>
                 </VBox>
@@ -64,7 +70,7 @@
                 <GridPane fx:id="mapGrid" gridLinesVisible="true"
                           alignment="CENTER" prefHeight="500.0" prefWidth="500.0"
                           maxHeight="500.0" maxWidth="500.0"
-                          style="-fx-border-color: black; -fx-border-width: 1;">
+                          style="-fx-border-color: black; -fx-border-width: 0;">
                     <!-- Kolumny i wiersze są dynamicznie dodawane w kodzie -->
                 </GridPane>
             </center>
