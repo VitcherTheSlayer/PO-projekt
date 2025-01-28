@@ -1,9 +1,9 @@
 package agh.oop.project.model;
 
 public enum Rotation {
-    NORTH(0, new Vector2d(0, 1)),
+    NORTH(0, new Vector2d(0, -1)),
     EAST(2, new Vector2d(1, 0)),
-    SOUTH(4, new Vector2d(0, -1)),
+    SOUTH(4, new Vector2d(0, 1)),
     WEST(6, new Vector2d(-1, 0)),
 
     NORTHEAST(1, NORTH.nextMove().add(EAST.nextMove())),
