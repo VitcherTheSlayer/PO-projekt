@@ -19,10 +19,12 @@ public abstract class Simulation {
     protected int day = 1;
     private volatile boolean isPaused = false;
     private volatile boolean stopSimulation = false;
+    StatsCollector statsCollector;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
         map = createMap(configuration);
+        this.statsCollector = new StatsCollector(map);
     }
 
     protected abstract void specificDailyLogic();
@@ -90,6 +92,7 @@ public abstract class Simulation {
 
     private void dailyCycle(int day) {
         specificDailyLogic();
+        statsCollector.addData(map,day);
         map.beforeEatUpdate(day);
         map.growGrass(configuration.plantGrowthPerDay());
         map.moveAnimals();
@@ -99,5 +102,9 @@ public abstract class Simulation {
 
     public int getDay() {
         return day;
+    }
+
+    public StatsCollector getStatsCollector() {
+        return statsCollector;
     }
 }
