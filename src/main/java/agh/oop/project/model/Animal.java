@@ -162,4 +162,8 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     public boolean isAlive() {
         return deathTime == -1;
     }
+
+    public int getDeathTime() {
+        return deathTime;
+    }
 }
