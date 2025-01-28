@@ -17,10 +17,11 @@ public abstract class Simulation {
     private static final Vector2d VECTORZERO =  new Vector2d(0,0);
     protected AbstractMap map;
     private SimulationWindow window;
-    protected int day = 1;
+    protected int day = 0;
     private volatile boolean isPaused = false;
     private volatile boolean stopSimulation = false;
     StatsCollector statsCollector;
+    private static final int CYCLE_DELAY_MS = 2000;
 
     public Simulation(Configuration configuration) throws IOException {
         this.configuration = configuration;
@@ -73,29 +74,31 @@ public abstract class Simulation {
         window.mapChanged(semaphore);
         semaphore.acquire();
         try {
-            Thread.sleep(500);
+            Thread.sleep(CYCLE_DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        while (!map.getAnimals().isEmpty()) {
-
+        System.out.println(!window.closed());
+        while (!map.getAnimals().isEmpty() && !window.closed()) {
             synchronized (this){
                 while (isPaused) {
                     this.wait();
                 }
             }
 
-            dailyCycle(day);
+            dailyCycle(++day);
+
+            System.out.println("dupa dupa dupa dupa dupa dupa dupa");
 
             // semaphore to wait for map being draw
             window.mapChanged(semaphore);
             semaphore.acquire();
             try {
-                Thread.sleep(500);
+                Thread.sleep(CYCLE_DELAY_MS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            day++;
+            //day++;
         }
     }
 

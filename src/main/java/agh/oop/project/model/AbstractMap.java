@@ -258,6 +258,30 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         return grassMap.size();
     }
 
+    public List<Animal> getMostPopularGenome() {
+        List<Animal> animals = getAnimals();
+
+        Map<Genome, Integer> genomeCount = new HashMap<>();
+
+        for (Animal animal : animals) {
+            Genome genome = animal.getGenome();
+            genomeCount.put(genome, genomeCount.getOrDefault(genome, 0) + 1);
+        }
+
+        int maxCount = genomeCount.values().stream().max(Integer::compare).orElse(0);
+
+        List<Genome> mostPopularGenomes = genomeCount.entrySet().stream()
+                .filter(entry -> entry.getValue() == maxCount)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        Random rng = new Random();
+        Genome chosenGenome = mostPopularGenomes.get(rng.nextInt(mostPopularGenomes.size()));
+
+        return animals.stream()
+                .filter(animal -> animal.getGenome().equals(chosenGenome))
+                .toList();
+	}
     public Statistics getStatistics() {
         List<Animal> animals = getAnimals();
 
