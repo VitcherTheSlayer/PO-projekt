@@ -1,7 +1,9 @@
 package agh.oop.project.model;
 
+import java.io.IOException;
+
 public class SimulationFactory {
-    public static Simulation createSimulation(Configuration configuration) {
+    public static Simulation createSimulation(Configuration configuration) throws IOException {
         switch (configuration.mapVariant()) {
             case GLOBE:
                 return new SimulationGlobe(configuration);

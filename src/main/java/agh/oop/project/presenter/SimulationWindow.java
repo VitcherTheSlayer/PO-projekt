@@ -119,7 +119,7 @@ public class SimulationWindow {
             Thread simulationThread = new Thread(() -> {
                 try {
                     simulation.run();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | IOException e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -407,6 +407,6 @@ public class SimulationWindow {
     }
 
     public void saveData() throws IOException {
-        simulation.getStatsCollector().exportToCsv();
+        //simulation.getStatsCollector().exportToCsv();
     }
 }
