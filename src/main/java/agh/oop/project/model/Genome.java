@@ -70,4 +70,17 @@ public class Genome implements Iterable<Integer> {
     public Iterator<Integer> iterator(int i) {
         return new GenomeIterator(this, i);
     }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass() == this.getClass()) {
+            return values.equals(((Genome)obj).values);
+        }
+        return false;
+    }
 }
