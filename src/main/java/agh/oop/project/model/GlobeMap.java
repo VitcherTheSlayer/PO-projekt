@@ -22,7 +22,7 @@ public class GlobeMap extends AbstractMap {
             Rotation newRotation = genomeMovableEntity.getRotation();
             int newY = requestedPosition.getY();
             if (newY < boundary.lowerLeft().getY() || newY > boundary.upperRight().getY()) {
-                newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT);
+                newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT / 4);
                 newY = genomeMovableEntity.getPosition().getY(); // Czasami wychodziło poza mape zwierze
             }
 
