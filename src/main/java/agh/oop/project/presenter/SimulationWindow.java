@@ -54,6 +54,7 @@ public class SimulationWindow {
     private final Node lastNode = null;
     private final boolean animalsSelectable = false;
     private Stage stage;
+    private boolean closed = false;
 
     // Elementy statystyk
     private final XYChart.Series<Number, Number> animalCountSeries = new XYChart.Series<>();
@@ -61,6 +62,7 @@ public class SimulationWindow {
     private final XYChart.Series<Number, Number> freeFieldSeries = new XYChart.Series<>();
     private final XYChart.Series<Number, Number> avgEnergySeries = new XYChart.Series<>();
     private final XYChart.Series<Number, Number> avgLifeSpanSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> avgChildCountSeries = new XYChart.Series<>();
 
     @FXML
     private Label statisticsPresenter; // Do poprawki, narazie prowizorycznie
@@ -286,6 +288,10 @@ public class SimulationWindow {
     public void init(Stage stage) {
         this.stage = stage;
 
+        this.stage.setOnCloseRequest(event -> {
+            closed = true;
+        });
+
         chooseAnimal.disableProperty().bind(pauseButton.selectedProperty().not());
         showMostPopularGenom.disableProperty().bind(pauseButton.selectedProperty().not());
     }
@@ -481,15 +487,10 @@ public class SimulationWindow {
     }
 
     public void mapChanged(Semaphore semaphore) {
+        Statistics stats = worldMap.getStatistics();
         Platform.runLater(() -> {
             drawMapReforged(); // Rysowanie mapy
-            updateStats(simulation.getDay(), // day
-                    worldMap.getAnimals().size(), // animals
-                    worldMap.getPlantsAmount(), // plants
-                    worldMap.getAllFreeCells(), // freeFields
-                    worldMap.getAverageEnergy(), // avgEnergy
-                    worldMap.getAverageLifeSpan() // avgLifeSpan
-                    );
+            updateStats(stats);
             semaphore.release();
         });
     }
@@ -502,8 +503,9 @@ public class SimulationWindow {
         freeFieldSeries.setName("Free Fields");
         avgEnergySeries.setName("Average Energy");
         avgLifeSpanSeries.setName("Average Lifespan");
+        avgChildCountSeries.setName("Average Child Count");
 
-        lineChart.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgLifeSpanSeries);
+        lineChart.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgLifeSpanSeries, avgChildCountSeries);
 
         // Wyłączenie symboli (kropek) na liniach
         disableSymbols(animalCountSeries);
@@ -511,21 +513,26 @@ public class SimulationWindow {
         disableSymbols(freeFieldSeries);
         disableSymbols(avgEnergySeries);
         disableSymbols(avgLifeSpanSeries);
+        disableSymbols(avgChildCountSeries);
 
         // Obsługa wyboru trybu wyświetlania
         viewModeComboBox.setOnAction(e -> updateViewMode());
     }
 
-    public void updateStats(int day, int animals, int plants, int freeFields, double avgEnergy, double avgLifeSpan) {
+    public void updateStats(Statistics stats) {
         // Aktualizacja bieżącego dnia
         int currentDay = simulation.getDay();
 
         // Dodanie nowych danych
-        animalCountSeries.getData().add(new XYChart.Data<>(day, animals));
-        plantCountSeries.getData().add(new XYChart.Data<>(day, plants));
-        freeFieldSeries.getData().add(new XYChart.Data<>(day, freeFields));
-        avgEnergySeries.getData().add(new XYChart.Data<>(day, avgEnergy));
-        avgLifeSpanSeries.getData().add(new XYChart.Data<>(day, avgLifeSpan));
+        animalCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.animalCount()));
+        plantCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.plantCount()));
+        freeFieldSeries.getData().add(new XYChart.Data<>(currentDay, stats.freeFieldsCount()));
+        avgEnergySeries.getData().add(new XYChart.Data<>(currentDay, stats.averageEnergy()));
+        if(!Double.isNaN(stats.averageLifespan())){
+            avgLifeSpanSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageLifespan()));
+        }
+        avgChildCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageChildCount()));
+
 
         // Automatyczna zmiana zakresu osi X (dla ostatnich 100 dni)
         if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
@@ -542,6 +549,7 @@ public class SimulationWindow {
         disableSymbols(freeFieldSeries);
         disableSymbols(avgEnergySeries);
         disableSymbols(avgLifeSpanSeries);
+        disableSymbols(avgChildCountSeries);
 
         lineChart.setAnimated(true);
     }
@@ -582,13 +590,10 @@ public class SimulationWindow {
 
         if (descendantsCount < 0) {descendantsCount = 0;}
 
-        System.out.println(animal.getActiveGeneIdx());
-
         String text = String.format(
                 "Genome: %s\nEnergy: %d\nEaten Plants: %d\nChildren: %d\nDescendants: %d\nDays Alive: %d\nAlive: %s\nDeath Day: %s",
                 genome.toString(animal.getActiveGeneIdx()), energy, eatenPlants, childrenAmount, descendantsCount, daysAlive, isAlive ? "Yes" : "No", animal.getDeathTime()
         );
-
 
         // Przekazanie tekstu do metody updateLabelText
         updateLabelText(text);
@@ -614,5 +619,9 @@ public class SimulationWindow {
 //            highlights.add(highlight);
             mapGrid.getChildren().add(highlight);
         }
+    }
+
+    public boolean closed() {
+        return closed;
     }
 }
