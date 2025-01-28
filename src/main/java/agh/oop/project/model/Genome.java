@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Random;
 
 public class Genome implements Iterable<Integer> {
-    private static class GenomeIterator implements Iterator<Integer>{
+    public static class GenomeIterator implements Iterator<Integer>{
         private final Genome genome;
         private int i;
 
-        public GenomeIterator(Genome genome, int i) {
+        private GenomeIterator(Genome genome, int i) {
             this.genome = genome;
             this.i = i;
         }
@@ -27,6 +27,10 @@ public class Genome implements Iterable<Integer> {
             i = (i + 1) % genome.size();
             return result;
         }
+
+        public int idx() {
+            return i;
+        }
     }
 
     public static final int UNIQUE_GENES_COUNT = 8;
@@ -39,14 +43,14 @@ public class Genome implements Iterable<Integer> {
         for(int i = 0; i < n; i++) {
             values.add(rng.nextInt(UNIQUE_GENES_COUNT));
         }
-        this.stringRepresentation = makeString();
+        this.stringRepresentation = makeString(-1);
     }
 
     public Genome(List<Integer> value) {
         for(int gene : value){ // deep copy
             values.add(gene);
         }
-        this.stringRepresentation = makeString();
+        this.stringRepresentation = makeString(-1);
     }
 
     public int get(int i) {
@@ -66,11 +70,11 @@ public class Genome implements Iterable<Integer> {
     }
 
     @Override
-    public Iterator<Integer> iterator() {
+    public GenomeIterator iterator() {
         return new GenomeIterator(this, 0);
     }
 
-    public Iterator<Integer> iterator(int i) {
+    public GenomeIterator iterator(int i) {
         return new GenomeIterator(this, i);
     }
 
@@ -87,10 +91,15 @@ public class Genome implements Iterable<Integer> {
         return false;
     }
 
-    private String makeString(){
+    private String makeString(int activeGeneIdx){
         StringBuilder sb = new StringBuilder();
-        for(int value : values){
-            sb.append("%d ".formatted(value));
+        for(int i = 0; i != values.size(); ++i){
+            if(i == activeGeneIdx){
+                sb.append("[%d] ".formatted(values.get(i)));
+            }
+            else{
+                sb.append("%d ".formatted(values.get(i)));
+            }
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
@@ -99,5 +108,9 @@ public class Genome implements Iterable<Integer> {
     @Override
     public String toString() {
         return stringRepresentation;
+    }
+
+    public String toString(int activeGeneIdx) {
+        return makeString(activeGeneIdx);
     }
 }

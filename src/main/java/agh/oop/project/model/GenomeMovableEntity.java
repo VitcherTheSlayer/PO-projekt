@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public abstract class GenomeMovableEntity {
     protected final Genome genome;
-    protected Iterator<Integer> genomeIterator;
+    protected Genome.GenomeIterator genomeIterator;
     protected Vector2d position;
     protected Rotation rotation;
 
@@ -41,5 +41,9 @@ public abstract class GenomeMovableEntity {
 
     public Genome getGenome() {
         return genome;
+    }
+
+    public int getActiveGeneIdx() {
+        return genomeIterator.idx();
     }
 }
