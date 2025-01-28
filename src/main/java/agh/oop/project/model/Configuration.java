@@ -17,7 +17,8 @@ public record Configuration(
         int maxMutations,
         MutationVariant mutationVariant,
         int swapMutationPercent,
-        int genomeLength
+        int genomeLength,
+        File csv
 ) implements Serializable {
     public Configuration {
         if(width <= 0){
@@ -104,7 +105,8 @@ public record Configuration(
                 5,
                 MutationVariant.FULL_RANDOMNESS,
                 50,
-                10
+                10,
+                null
         );
 
     }
