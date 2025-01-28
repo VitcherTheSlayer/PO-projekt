@@ -165,17 +165,20 @@ public class SettingsWindow {
 
         // Utwórz nową scenę i przypisz ją do Stage
         Scene simulationScene = new Scene(simulationPane);
-        stage.setScene(simulationScene);
-        stage.setTitle("Symulacja");
-        stage.setMaximized(true);
-        stage.setResizable(false);
-        stage.centerOnScreen();
+        Stage simulationStage = new Stage();
+        simulationStage.setScene(simulationScene);
+        simulationStage.setTitle("Symulacja");
+        simulationStage.setMaximized(true);
+        simulationStage.setResizable(false);
+        simulationStage.centerOnScreen();
 
         SimulationWindow simulationWindow = simulationLoader.getController();
-        simulationWindow.init(stage);
+        simulationWindow.init(simulationStage);
         Simulation simulation = SimulationFactory.createSimulation(this.getConfig());
         simulationWindow.setSimulation(simulation);
         simulationWindow.setWorldMap(simulation.getMap());
         simulation.createMapElements();
+
+        simulationStage.show();
     }
 }

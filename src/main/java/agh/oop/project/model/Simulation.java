@@ -14,7 +14,7 @@ public abstract class Simulation {
     protected final Configuration configuration;
     private final List<Animal> animals = new ArrayList<>();
     private static final Vector2d VECTORZERO =  new Vector2d(0,0);
-    protected static AbstractMap map;
+    protected AbstractMap map;
     private SimulationWindow window;
     protected int day = 1;
     private volatile boolean isPaused = false;
