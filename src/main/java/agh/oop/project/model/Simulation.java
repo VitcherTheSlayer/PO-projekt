@@ -2,6 +2,7 @@ package agh.oop.project.model;
 
 import agh.oop.project.presenter.SimulationWindow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,10 +22,10 @@ public abstract class Simulation {
     private volatile boolean stopSimulation = false;
     StatsCollector statsCollector;
 
-    public Simulation(Configuration configuration) {
+    public Simulation(Configuration configuration) throws IOException {
         this.configuration = configuration;
         map = createMap(configuration);
-        this.statsCollector = new StatsCollector(map);
+        this.statsCollector = new StatsCollector(configuration.csv());
     }
 
     protected abstract void specificDailyLogic();
@@ -66,7 +67,7 @@ public abstract class Simulation {
         }
     }
 
-    public void run() throws InterruptedException {
+    public void run() throws InterruptedException, IOException {
         // first draw
         Semaphore semaphore = new Semaphore(0);
         window.mapChanged(semaphore);
@@ -98,9 +99,10 @@ public abstract class Simulation {
         }
     }
 
-    private void dailyCycle(int day) {
+    private void dailyCycle(int day) throws IOException {
         specificDailyLogic();
-        statsCollector.addData(map,day);
+        //statsCollector.addData(map,day);
+        statsCollector.saveDay(day, map.getStatistics());
         map.beforeEatUpdate(day);
         map.growGrass(configuration.plantGrowthPerDay());
         map.moveAnimals();
