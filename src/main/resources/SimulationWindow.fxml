@@ -48,6 +48,9 @@
                                     </FXCollections>
                                 </items>
                             </ComboBox>
+                            <!-- Zapis  statystyk -->
+                            <Button fx:id="saveStatistics" onAction="#saveData" text="Zapisz dane" >
+                            </Button>
                         </HBox>
 
                         <Label text="Wybrany zwierzak:" style="-fx-font-size: 16; -fx-font-weight: bold;" />

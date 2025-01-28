@@ -101,7 +101,6 @@ public abstract class Simulation {
 
     private void dailyCycle(int day) throws IOException {
         specificDailyLogic();
-        //statsCollector.addData(map,day);
         statsCollector.saveDay(day, map.getStatistics());
         map.beforeEatUpdate(day);
         map.growGrass(configuration.plantGrowthPerDay());
