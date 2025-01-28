@@ -21,6 +21,7 @@ public abstract class Simulation {
     private volatile boolean isPaused = false;
     private volatile boolean stopSimulation = false;
     StatsCollector statsCollector;
+    private static final int CYCLE_DELAY_MS = 2000;
 
     public Simulation(Configuration configuration) throws IOException {
         this.configuration = configuration;
@@ -73,7 +74,7 @@ public abstract class Simulation {
         window.mapChanged(semaphore);
         semaphore.acquire();
         try {
-            Thread.sleep(500);
+            Thread.sleep(CYCLE_DELAY_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,7 +92,7 @@ public abstract class Simulation {
             window.mapChanged(semaphore);
             semaphore.acquire();
             try {
-                Thread.sleep(2000);
+                Thread.sleep(CYCLE_DELAY_MS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
