@@ -67,6 +67,16 @@ public abstract class Simulation {
     }
 
     public void run() throws InterruptedException {
+        // first draw
+        Semaphore semaphore = new Semaphore(0);
+        window.mapChanged(semaphore);
+        semaphore.acquire();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         while (day < 50 && !map.getAnimals().isEmpty()) {
 
             synchronized (this){
@@ -77,8 +87,7 @@ public abstract class Simulation {
 
             dailyCycle(day);
 
-            // latch to wait for map being drawn
-            Semaphore semaphore = new Semaphore(0);
+            // semaphore to wait for map being draw
             window.mapChanged(semaphore);
             semaphore.acquire();
             try {
