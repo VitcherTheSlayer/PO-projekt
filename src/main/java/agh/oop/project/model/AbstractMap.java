@@ -267,7 +267,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         Map<Genome, Integer> genomeCounts = new HashMap<>();
         for(Animal animal : animals) {
-            Integer count = Optional.of(genomeCounts.get(animal.getGenome()) + 1).orElse(1);
+            Integer count = Optional.ofNullable(genomeCounts.get(animal.getGenome())).orElse(0) + 1;
             genomeCounts.put(animal.getGenome(), count);
         }
         Genome dominantGenome = genomeCounts.entrySet().stream()
