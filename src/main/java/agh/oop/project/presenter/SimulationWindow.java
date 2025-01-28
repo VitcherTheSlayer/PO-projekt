@@ -6,6 +6,7 @@ import agh.oop.project.model.StatsCollector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -17,9 +18,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -118,7 +119,7 @@ public class SimulationWindow {
             Thread simulationThread = new Thread(() -> {
                 try {
                     simulation.run();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | IOException e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -237,19 +238,47 @@ public class SimulationWindow {
                     ImageView animalImageView = new ImageView(animalImage);
 
                     // Dopasowanie rozmiaru obrazka
-                    animalImageView.setFitWidth(50);  // Możesz dostosować wymiary
-                    animalImageView.setFitHeight(50);
+                    animalImageView.setFitWidth(40);  // Możesz dostosować wymiary
+                    animalImageView.setFitHeight(40);
+
+                    // Tworzymy StackPane, aby trzymać obrazek i pasek życia
+                    StackPane animalPane = new StackPane();
+
+                    // Pasek życia
+                    double energyFraction = animal.energyFraction(); // Proporcja energii
+                    double barWidth = 50; // Stała szerokość paska
+                    double barHeight = 5; // Wysokość paska
+
+                    // Czerwony pasek (tło)
+                    Rectangle redBar = new Rectangle(barWidth, barHeight);
+                    redBar.setFill(Color.RED);
+
+                    // Zielony pasek
+                    Rectangle greenBar = new Rectangle(energyFraction * barWidth, barHeight);
+                    greenBar.setFill(Color.GREEN);
+
+                    // Ustawienie paska życia w HBox
+                    StackPane healthBar = new StackPane();
+                    healthBar.getChildren().addAll(redBar, greenBar);
+                    StackPane.setAlignment(greenBar, Pos.CENTER_LEFT);
+                    StackPane.setAlignment(redBar, Pos.CENTER_LEFT);
+
+                    // Dodajemy pasek i obrazek do StackPane
+                    VBox animalWithHealthBar = new VBox();
+                    animalWithHealthBar.getChildren().addAll(animalImageView, healthBar);
+                    animalWithHealthBar.setAlignment(Pos.CENTER); // Centrowanie obrazka i paska
+                    animalWithHealthBar.setSpacing(0);
 
                     // Przekształcenie współrzędnych na siatkę
                     int gridX = animalPosition.getX();
                     int gridY = animalPosition.getY();
 
                     // Ustawienie pozycji na siatce
-                    GridPane.setHalignment(animalImageView, HPos.CENTER);
-                    GridPane.setValignment(animalImageView, VPos.CENTER);
+                    GridPane.setHalignment(animalWithHealthBar, HPos.CENTER);
+                    GridPane.setValignment(animalWithHealthBar, VPos.CENTER);
 
                     // Dodanie do siatki
-                    mapGrid.add(animalImageView, gridX, gridY);
+                    mapGrid.add(animalWithHealthBar, gridX, gridY);
 
                     // Rysujemy tylko jednego zwierzaka z danego miejsca
                     break;
@@ -283,7 +312,6 @@ public class SimulationWindow {
             }
         }
     }
-
 
     private void clearGrid() {
         mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // Hack dla linii siatki
@@ -379,6 +407,6 @@ public class SimulationWindow {
     }
 
     public void saveData() throws IOException {
-        simulation.getStatsCollector().exportToCsv();
+        //simulation.getStatsCollector().exportToCsv();
     }
 }

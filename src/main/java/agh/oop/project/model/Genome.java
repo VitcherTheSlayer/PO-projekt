@@ -32,18 +32,21 @@ public class Genome implements Iterable<Integer> {
     public static final int UNIQUE_GENES_COUNT = 8;
 
     private final ArrayList<Integer> values = new ArrayList<>();
+    private final String stringRepresentation;
 
     public Genome(int n) {
         var rng = new Random();
         for(int i = 0; i < n; i++) {
             values.add(rng.nextInt(UNIQUE_GENES_COUNT));
         }
+        this.stringRepresentation = makeString();
     }
 
     public Genome(List<Integer> value) {
         for(int gene : value){ // deep copy
             values.add(gene);
         }
+        this.stringRepresentation = makeString();
     }
 
     public int get(int i) {
@@ -69,5 +72,32 @@ public class Genome implements Iterable<Integer> {
 
     public Iterator<Integer> iterator(int i) {
         return new GenomeIterator(this, i);
+    }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass() == this.getClass()) {
+            return values.equals(((Genome)obj).values);
+        }
+        return false;
+    }
+
+    private String makeString(){
+        StringBuilder sb = new StringBuilder();
+        for(int value : values){
+            sb.append("%d ".formatted(value));
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return stringRepresentation;
     }
 }

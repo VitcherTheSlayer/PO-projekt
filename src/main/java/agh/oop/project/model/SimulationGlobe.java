@@ -1,7 +1,9 @@
 package agh.oop.project.model;
 
+import java.io.IOException;
+
 public class SimulationGlobe extends Simulation {
-    public SimulationGlobe(Configuration configuration) {
+    public SimulationGlobe(Configuration configuration) throws IOException {
         super(configuration);
     }
 

@@ -38,4 +38,8 @@ public abstract class GenomeMovableEntity {
     public Vector2d getPosition() {
         return position;
     }
+
+    public Genome getGenome() {
+        return genome;
+    }
 }
