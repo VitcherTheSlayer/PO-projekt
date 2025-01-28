@@ -30,6 +30,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.Semaphore;
@@ -85,6 +87,9 @@ public class SimulationWindow {
     @FXML
     final Canvas[] choosenAnimalHighlight = {null}; // Przechowuje aktualnie podświetloną komórkę
 
+    @FXML
+    final Canvas[] popularGenomeHighlight = {null};
+
     // Elementy statystyk
     @FXML
     private LineChart<Number, Number> lineChart;
@@ -103,6 +108,12 @@ public class SimulationWindow {
 
     @FXML
     private boolean isCellSelected = false;
+
+    @FXML
+    private Button showMostPopularGenom;
+
+    @FXML
+    private Label mostPopularGenomLabel;
 
     @FXML
     private void onClickPlay() {
@@ -276,6 +287,7 @@ public class SimulationWindow {
         this.stage = stage;
 
         chooseAnimal.disableProperty().bind(pauseButton.selectedProperty().not());
+        showMostPopularGenom.disableProperty().bind(pauseButton.selectedProperty().not());
     }
 
     public void setWorldMap(AbstractMap map){
@@ -581,5 +593,23 @@ public class SimulationWindow {
 
     public void updateLabelText(String text) {
         selectedAnimalPresenter.setText(text); // Zmiana tekstu Label
+    }
+
+
+
+    public void showMostPopularGenom() {
+        System.out.println("Showing most popular genom");
+        List<Animal> animals = worldMap.getMostPopularGenome();
+        Genome mostPopularGenome = animals.get(0).getGenome();
+
+        List<Canvas> highlights = new ArrayList<>();
+
+        // Zaznaczam animale na żółto
+        for (Animal animal : animals) {
+            Vector2d position = animal.getPosition();
+            Canvas highlight = createHighlightCell(position.getX(), position.getY(), new Color(1, 1, 0, 1));
+//            highlights.add(highlight);
+            mapGrid.getChildren().add(highlight);
+        }
     }
 }
