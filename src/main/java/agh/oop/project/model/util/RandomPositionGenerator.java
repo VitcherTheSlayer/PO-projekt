@@ -41,8 +41,8 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
 
         this.size = count;
 
-        for(int y = 0; y <= maxHeight; ++y){
-            for(int x = 0; x <= maxWidth; ++x){
+        for(int y = 0; y < maxHeight; ++y){
+            for(int x = 0; x < maxWidth; ++x){
                 if(exclusionPredicate != null && !exclusionPredicate.test(new Vector2d(x, y))){
                     positions.add(new Vector2d(x, y));
                 }

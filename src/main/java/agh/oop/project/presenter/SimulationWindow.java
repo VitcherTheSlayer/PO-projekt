@@ -308,10 +308,10 @@ public class SimulationWindow {
         Vector2d lowerLeft = bounds.lowerLeft();
         Vector2d upperRight = bounds.upperRight();
 
-        for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
+        for (int x = lowerLeft.getX(); x < upperRight.getX(); x++) {
             mapGrid.getColumnConstraints().add(new ColumnConstraints(cellSize));
         }
-        for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
+        for (int y = lowerLeft.getY(); y < upperRight.getY(); y++) {
             mapGrid.getRowConstraints().add(new RowConstraints(cellSize));
         }
 
@@ -323,8 +323,8 @@ public class SimulationWindow {
 
 
         // 1. Rysuje tło z elementami mapy owlbear
-        for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
-            for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
+        for (int x = lowerLeft.getX(); x < upperRight.getX(); x++) {
+            for (int y = lowerLeft.getY(); y < upperRight.getY(); y++) {
                 Vector2d position = new Vector2d(x, y);
 
                 // Sprawdzenie, czy pozycja znajduje się w granicach jungli

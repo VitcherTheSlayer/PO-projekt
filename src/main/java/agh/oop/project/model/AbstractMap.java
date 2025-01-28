@@ -116,7 +116,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         // Zbieram wolne miejsca na równiku
         List<Vector2d> freeEquatorPositions = new ArrayList<>();
-        for (int x = 0; x <= configuration.width(); x++) {
+        for (int x = 0; x < configuration.width(); x++) {
             for (int y = equatorDelta.getY(); y < equatorDelta.getY() + equatorThickness; y++) {
                 Vector2d position = new Vector2d(x, y);
                 if (!grassMap.containsKey(position) && !animalOccupiedPositions.contains(position)) {
@@ -127,8 +127,8 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         // Zbieram wolne miejsca poza równikiem
         List<Vector2d> freeOtherPositions = new ArrayList<>();
-        for (int x = 0; x <= configuration.width(); x++) {
-            for (int y = 0; y <= configuration.height(); y++) {
+        for (int x = 0; x < configuration.width(); x++) {
+            for (int y = 0; y < configuration.height(); y++) {
                 Vector2d position = new Vector2d(x, y);
                 if (!equator.test(position) && !grassMap.containsKey(position) && !animalOccupiedPositions.contains(position)) {
                     freeOtherPositions.add(position);
@@ -226,7 +226,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
     public Statistics getStatistics() {
         List<Animal> animals = getAnimals();
 
-        int freeFields = (configuration.height()+1) * (configuration.width()+1)
+        int freeFields = (configuration.height()) * (configuration.width())
                 - grassMap.size()
                 - animalOccupiedPositions.size();
 
