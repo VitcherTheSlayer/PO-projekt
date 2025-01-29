@@ -239,8 +239,9 @@ public class SimulationWindow {
     private Canvas createHighlightCell(int cellX, int cellY,Color color) {
         Canvas highlightCanvas = new Canvas(cellSize, cellSize);
 
-        highlightCanvas.setTranslateX(cellX * cellSize + 0.400001525878906*cellX);
-        highlightCanvas.setTranslateY(cellY * cellSize + 0.400001525878906*cellY);
+        float factor = (float) cellSize / (float) 50;
+        highlightCanvas.setTranslateX(cellX * cellSize + 0.400001525878906*cellX*factor);
+        highlightCanvas.setTranslateY(cellY * cellSize + 0.400001525878906*cellY*factor);
 
         GraphicsContext gc = highlightCanvas.getGraphicsContext2D();
 

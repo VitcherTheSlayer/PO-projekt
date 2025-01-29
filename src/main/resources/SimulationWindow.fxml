@@ -67,9 +67,9 @@
             <!-- Siatka symulacji po lewej -->
             <left>
                 <VBox>
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10" />
-                    </padding>
+<!--                    <padding>-->
+<!--                        <Insets top="10" right="10" bottom="10" left="10" />-->
+<!--                    </padding>-->
                     <GridPane fx:id="mapGrid" gridLinesVisible="true"
                               alignment="CENTER" prefHeight="500.0" prefWidth="500.0"
                               maxHeight="500.0" maxWidth="500.0"
