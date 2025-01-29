@@ -161,7 +161,6 @@ public class SettingsWindow {
 
     @FXML
     private void startSimulation() throws IOException {
-        System.out.println("start Symulacji");
 
         // Załaduj nową scenę symulacji
         FXMLLoader simulationLoader = new FXMLLoader();

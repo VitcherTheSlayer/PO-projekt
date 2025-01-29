@@ -152,14 +152,14 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
 
         // Dodaje trawe na równiku
         Collections.shuffle(freeEquatorPositions);
-        for (int i = 0; i < equatorGrassCount; i++) {
+        for (int i = 0; i < Math.min(equatorGrassCount, freeEquatorPositions.size()); i++) {
             Vector2d position = freeEquatorPositions.get(i);
             grassMap.put(position, new Grass(position));
         }
 
         // Dodaje trawe poza równikiem
         Collections.shuffle(freeOtherPositions);
-        for (int i = 0; i < otherGrassCount; i++) {
+        for (int i = 0; i < Math.min(otherGrassCount, freeOtherPositions.size()); i++) {
             Vector2d position = freeOtherPositions.get(i);
             grassMap.put(position, new Grass(position));
         }

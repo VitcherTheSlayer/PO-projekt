@@ -80,7 +80,7 @@
                         <padding>
                             <Insets top="10" right="10" bottom="10" left="10" />
                         </padding>
-                        <Button fx:id="showMostPopularGenom" onAction="#showMostPopularGenom" text="Pokaż najpopularniejszy genom" >
+                        <Button fx:id="showMostPopularGenom" onAction="#showMostPopularGenom" text="Pokaż najpopularniejszy genom" style="-fx-border-color: #FFD500FF;" >
                         </Button>
                     </HBox>
                     <HBox>
@@ -111,7 +111,7 @@
                             <children>
                                 <ToggleButton fx:id="pauseButton" text="Pause" onAction="#onClickPause" />
                                 <ToggleButton fx:id="resumeButton" text="Resume" onAction="#onClickPlay" />
-                                <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart" />
+                                <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart"  style="-fx-border-color: #40FF00FF;" />
                             </children>
                         </HBox>
                     </children>
