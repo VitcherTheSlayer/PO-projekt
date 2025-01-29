@@ -13,7 +13,7 @@ public abstract class Simulation {
     protected int day = 0;
     private volatile boolean isPaused = false;
     StatisticsSaver statisticsSaver;
-    private static final int CYCLE_DELAY_MS = 2;
+    private static final int CYCLE_DELAY_MS = 1000;
 
     public Simulation(Configuration configuration) throws IOException {
         this.configuration = configuration;
