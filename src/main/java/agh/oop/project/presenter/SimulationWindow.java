@@ -33,12 +33,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
+//import static sun.swing.MenuItemLayoutHelper.max;
+
 public class SimulationWindow {
     private static final int CELL_SIZE_MIN = 3;
     private static final int CELL_SIZE_MAX = 50;
     private static final int MAX_AXES_CELL_SIZE = 13;
 
-    private final int cellSize = 50;
+    private int cellSize;
     private final Vector2d xDir = Rotation.EAST.nextMove();
     private final Vector2d yDir = Rotation.NORTH.nextMove();
 
@@ -280,6 +282,7 @@ public class SimulationWindow {
 
     public void setWorldMap(AbstractMap map){
         this.worldMap = map;
+        this.cellSize = (int) (500 / Math.max(map.getBoundary().upperRight().getY(), map.getBoundary().upperRight().getX()));
     }
 
     public void drawMapReforged() {
@@ -315,26 +318,19 @@ public class SimulationWindow {
                 ImageView backgroundView = new ImageView(backgroundImage);
 
                 // Dopasowanie rozmiaru
-                backgroundView.setFitWidth(50);
-                backgroundView.setFitHeight(50);
+                backgroundView.setFitWidth(cellSize);
+                backgroundView.setFitHeight(cellSize);
 
                 // Ustawienie w gridzie
                 mapGrid.add(backgroundView, x - lowerLeft.getX(), y - lowerLeft.getY()); // Zmieniona pozycja Y
-
-                // Dodanie prostokąta z współrzędnymi w prawym górnym rogu
-                Label coordinatesLabel = new Label(x + "," + y);
-                coordinatesLabel.setStyle("-fx-font-size: 10; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.5);");
-                GridPane.setHalignment(coordinatesLabel, HPos.RIGHT); // Ustawienie do prawego górnego rogu
-                GridPane.setValignment(coordinatesLabel, VPos.BOTTOM);   // Ustawienie do prawego górnego rogu
-                mapGrid.add(coordinatesLabel, x - lowerLeft.getX(), y - lowerLeft.getY()); // Dodanie do siatki
 
                 // Sprawdzamy, czy mapą jest OwlbearMap
                 if (worldMap instanceof OwlbearMap map) {
                     if (map.getHuntingGround().test(position)) {
                         // Jeśli jest to instancja OwlbearMap, dodajemy RedArea
                         ImageView redAreaView = new ImageView(RedArea);
-                        redAreaView.setFitWidth(50);
-                        redAreaView.setFitHeight(50);
+                        redAreaView.setFitWidth(cellSize);
+                        redAreaView.setFitHeight(cellSize);
 
                         // Ustawiamy pozycję RedArea
                         mapGrid.add(redAreaView, x - lowerLeft.getX(), y - lowerLeft.getY());
@@ -347,8 +343,8 @@ public class SimulationWindow {
                     if (position.equals(owlbearPosition)) {
                         Image owlbearImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Owlbear/" + owlbear.getRotation() + ".png")));
                         ImageView owlbearImageView = new ImageView(owlbearImage);
-                        owlbearImageView.setFitWidth(50);
-                        owlbearImageView.setFitHeight(50);
+                        owlbearImageView.setFitWidth(cellSize);
+                        owlbearImageView.setFitHeight(cellSize);
 
                         // Ustawienie pozycji dla Owlbeara
                         mapGrid.add(owlbearImageView, x - lowerLeft.getX(), y - lowerLeft.getY());
@@ -369,8 +365,8 @@ public class SimulationWindow {
                 ImageView grassImageView = new ImageView(Palm);
 
                 // Dopasowanie rozmiaru obrazka
-                grassImageView.setFitWidth(50);
-                grassImageView.setFitHeight(50);
+                grassImageView.setFitWidth(cellSize);
+                grassImageView.setFitHeight(cellSize);
 
                 // Przekształcenie współrzędnych na siatkę
                 int gridX = position.getX();
@@ -405,16 +401,16 @@ public class SimulationWindow {
                     ImageView animalImageView = new ImageView(animalImage);
 
                     // Dopasowanie rozmiaru obrazka
-                    animalImageView.setFitWidth(40);  // Możesz dostosować wymiary
-                    animalImageView.setFitHeight(40);
+                    animalImageView.setFitWidth(cellSize*0.8);  // Możesz dostosować wymiary
+                    animalImageView.setFitHeight(cellSize*0.8);
 
                     // Tworzymy StackPane, aby trzymać obrazek i pasek życia
                     StackPane animalPane = new StackPane();
 
                     // Pasek życia
                     double energyFraction = animal.energyFraction(); // Proporcja energii
-                    double barWidth = 50; // Stała szerokość paska
-                    double barHeight = 5; // Wysokość paska
+                    double barWidth = cellSize; // Stała szerokość paska
+                    double barHeight = (double) cellSize /10; // Wysokość paska
 
                     // Czerwony pasek (tło)
                     Rectangle redBar = new Rectangle(barWidth, barHeight);
@@ -523,7 +519,7 @@ public class SimulationWindow {
 
         xAxisEnergy.setLowerBound(0);
         xAxisEnergy.setUpperBound(currentDay);
-        
+
         // Wyłącz ponownie symbole po dodaniu nowych punktów
         disableSymbols(animalCountSeries);
         disableSymbols(plantCountSeries);
