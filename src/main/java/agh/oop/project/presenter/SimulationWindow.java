@@ -92,8 +92,6 @@ public class SimulationWindow {
     private NumberAxis xAxis;
     @FXML
     private NumberAxis yAxis;
-    @FXML
-    private ComboBox<String> viewModeComboBox;
 
     @FXML
     private boolean isCellSelected = false;
@@ -486,9 +484,6 @@ public class SimulationWindow {
         disableSymbols(avgEnergySeries);
         disableSymbols(avgLifeSpanSeries);
         disableSymbols(avgChildCountSeries);
-
-        // Obsługa wyboru trybu wyświetlania
-        viewModeComboBox.setOnAction(e -> updateViewMode());
     }
 
     public void updateStats(Statistics stats) {
@@ -506,15 +501,8 @@ public class SimulationWindow {
         avgChildCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageChildCount()));
         dominantGenomeLabel.setText(stats.dominantGenome().toString());
 
-
-        // Automatyczna zmiana zakresu osi X (dla ostatnich 100 dni)
-        if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
-            xAxis.setLowerBound(Math.max(0, currentDay - 100));
-            xAxis.setUpperBound(currentDay);
-        } else {
-            xAxis.setLowerBound(0);
-            xAxis.setUpperBound(currentDay);
-        }
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(currentDay);
 
         // Wyłącz ponownie symbole po dodaniu nowych punktów
         disableSymbols(animalCountSeries);
@@ -527,17 +515,6 @@ public class SimulationWindow {
         lineChart.setAnimated(true);
     }
 
-    private void updateViewMode() {
-        int currentDay = simulation.getDay();
-        // Zmiana trybu wyświetlania
-        if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
-            xAxis.setLowerBound(Math.max(0, currentDay - 100));
-            xAxis.setUpperBound(currentDay);
-        } else {
-            xAxis.setLowerBound(0);
-            xAxis.setUpperBound(currentDay);
-        }
-    }
 
     private void disableSymbols(XYChart.Series<Number, Number> series) {
         series.getNode().lookup(".chart-series-line").setStyle("-fx-stroke-width: 2px;"); // Ustawienie grubości linii
