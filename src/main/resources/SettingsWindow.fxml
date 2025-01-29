@@ -113,8 +113,11 @@
         </HBox>
 
         <!-- Zapis  statystyk -->
-        <Button fx:id="saveStatistics" onAction="#selectCSV" text="Zapisz dane"/>
-
+        <Button fx:id="saveStatistics" onAction="#selectCSV" text="Zapisz dane" />
+        <Label fx:id="errorConfigDisplay" alignment="CENTER" prefHeight="100.0" prefWidth="1000.0" style="-fx-font-family: 'Monospaced';" underline="true" >
+         <font>
+            <Font size="16.0" />
+         </font></Label>
         <!-- Przycisk akcji (pod wszystkimi kolumnami na środku) -->
         <HBox alignment="CENTER" prefHeight="134.0" prefWidth="600.0" spacing="20">
             <Button fx:id="saveButton" onAction="#save" prefHeight="45.0" prefWidth="104.0" text="Save File">
