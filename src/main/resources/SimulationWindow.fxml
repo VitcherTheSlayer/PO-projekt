@@ -16,7 +16,7 @@
     <children>
         <!-- Główna siatka -->
         <BorderPane prefWidth="800.0" prefHeight="600.0">
-            <!-- Statystyki po prawej stronie -->
+            <!-- Statystyki na środku -->
             <center>
                 <VBox spacing="10" alignment="TOP_LEFT" minWidth="600" maxWidth="600">
                     <padding>
@@ -26,36 +26,43 @@
                         <!-- Nagłówek -->
                         <Label text="Simulation Statistics" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-                        <!-- Wykres -->
-                        <LineChart fx:id="lineChart" prefHeight="400.0" prefWidth="580.0" minHeight="400.0" maxHeight="400.0"
+                        <!-- Pierwszy wykres (wszystkie wartości poza avgLifeSpan) -->
+                        <LineChart fx:id="lineChartMain" prefHeight="400.0" prefWidth="580.0" minHeight="300.0" maxHeight="300.0"
                                    style="-fx-stroke-width: 2px;">
                             <xAxis>
-                                <NumberAxis fx:id="xAxis" label="Day" />
+                                <NumberAxis fx:id="xAxisMain" label="Day" />
                             </xAxis>
                             <yAxis>
-                                <NumberAxis fx:id="yAxis" label="Value" />
+                                <NumberAxis fx:id="yAxisMain" label="Value" />
                             </yAxis>
                         </LineChart>
 
-                        <!-- Kontrolki -->
-                        <HBox alignment="CENTER" spacing="20">
-                            <Label text="View Mode:" />
-                            <ComboBox fx:id="viewModeComboBox" promptText="Select Mode">
-                                <items>
-                                    <FXCollections fx:factory="observableArrayList">
-                                        <String fx:value="Full Range" />
-                                        <String fx:value="Last 100 Days" />
-                                    </FXCollections>
-                                </items>
-                            </ComboBox>
-                        </HBox>
-                        <HBox>
-                            <Label text="Dominujący Genom: "/>
-                            <Label fx:id="dominantGenomeLabel"/>
-                        </HBox>
+                        <!-- Drugi wykres (tylko avgLifeSpan) -->
+                        <LineChart fx:id="lineChartLifespan" prefHeight="200.0" prefWidth="580.0" minHeight="200.0" maxHeight="200.0"
+                                   style="-fx-stroke-width: 2px;">
+                            <xAxis>
+                                <NumberAxis fx:id="xAxisLifespan" label="Day" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLifespan" label="Average Lifespan" />
+                            </yAxis>
+                        </LineChart>
+
+                        <!-- Drugi wykres (tylko avgEnergy) -->
+                        <LineChart fx:id="lineChartEnergy" prefHeight="200.0" prefWidth="580.0" minHeight="200.0" maxHeight="200.0"
+                                   style="-fx-stroke-width: 2px;">
+                            <xAxis>
+                                <NumberAxis fx:id="xAxisEnergy" label="Day" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisEnergy" label="Average Lifespan" />
+                            </yAxis>
+                        </LineChart>
+
                     </children>
                 </VBox>
             </center>
+
 
             <!-- Siatka symulacji po lewej -->
             <left>
@@ -84,6 +91,10 @@
                         </Button>
                     </HBox>
                     <HBox>
+                        <Label text="Dominujący Genom: "/>
+                        <Label fx:id="dominantGenomeLabel"/>
+                    </HBox>
+                    <HBox>
                         <padding>
                             <Insets top="10" right="10" bottom="10" left="10" />
                         </padding>
@@ -94,28 +105,29 @@
                     <HBox>
                         <Label fx:id="selectedAnimalPresenter" text="Dane animala" />
                     </HBox>
+                    <VBox spacing="10" alignment="CENTER">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10" />
+                        </padding>
+                        <children>
+                            <!-- Status symulacji -->
+                            <Label fx:id="simulationStatusLabel" text="Simulation Status" style="-fx-font-size: 14;" />
+
+                            <!-- Przycisk kontrolny -->
+                            <HBox spacing="10" alignment="CENTER">
+                                <children>
+                                    <ToggleButton fx:id="pauseButton" text="Pause" onAction="#onClickPause" />
+                                    <ToggleButton fx:id="resumeButton" text="Resume" onAction="#onClickPlay" />
+                                    <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart"  style="-fx-border-color: #40FF00FF;" />
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
                 </VBox>
             </right>
             <!-- Sekcja poniżej siatki -->
             <bottom>
-                <VBox spacing="10" alignment="CENTER">
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10" />
-                    </padding>
-                    <children>
-                        <!-- Status symulacji -->
-                        <Label fx:id="simulationStatusLabel" text="Simulation Status" style="-fx-font-size: 14;" />
 
-                        <!-- Przycisk kontrolny -->
-                        <HBox spacing="10" alignment="CENTER">
-                            <children>
-                                <ToggleButton fx:id="pauseButton" text="Pause" onAction="#onClickPause" />
-                                <ToggleButton fx:id="resumeButton" text="Resume" onAction="#onClickPlay" />
-                                <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart"  style="-fx-border-color: #40FF00FF;" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
             </bottom>
         </BorderPane>
     </children>

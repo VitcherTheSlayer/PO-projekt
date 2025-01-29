@@ -87,13 +87,23 @@ public class SimulationWindow {
 
     // Elementy statystyk
     @FXML
-    private LineChart<Number, Number> lineChart;
+    private LineChart<Number, Number> lineChartMain;
     @FXML
-    private NumberAxis xAxis;
+    private NumberAxis xAxisMain;
     @FXML
-    private NumberAxis yAxis;
+    private NumberAxis yAxisMain;
     @FXML
-    private ComboBox<String> viewModeComboBox;
+    private LineChart<Number, Number> lineChartLifespan;
+    @FXML
+    private NumberAxis xAxisLifespan;
+    @FXML
+    private NumberAxis yAxisLifespan;
+    @FXML
+    private LineChart<Number, Number> lineChartEnergy;
+    @FXML
+    private NumberAxis xAxisEnergy;
+    @FXML
+    private NumberAxis yAxisEnergy;
 
     @FXML
     private boolean isCellSelected = false;
@@ -477,7 +487,9 @@ public class SimulationWindow {
         avgLifeSpanSeries.setName("Average Lifespan");
         avgChildCountSeries.setName("Average Child Count");
 
-        lineChart.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgLifeSpanSeries, avgChildCountSeries);
+        lineChartMain.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgChildCountSeries);
+        lineChartLifespan.getData().add(avgLifeSpanSeries);
+        lineChartEnergy.getData().add(avgEnergySeries);
 
         // Wyłączenie symboli (kropek) na liniach
         disableSymbols(animalCountSeries);
@@ -486,9 +498,6 @@ public class SimulationWindow {
         disableSymbols(avgEnergySeries);
         disableSymbols(avgLifeSpanSeries);
         disableSymbols(avgChildCountSeries);
-
-        // Obsługa wyboru trybu wyświetlania
-        viewModeComboBox.setOnAction(e -> updateViewMode());
     }
 
     public void updateStats(Statistics stats) {
@@ -506,16 +515,15 @@ public class SimulationWindow {
         avgChildCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageChildCount()));
         dominantGenomeLabel.setText(stats.dominantGenome().toString());
 
+        xAxisMain.setLowerBound(0);
+        xAxisMain.setUpperBound(currentDay);
 
-        // Automatyczna zmiana zakresu osi X (dla ostatnich 100 dni)
-        if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
-            xAxis.setLowerBound(Math.max(0, currentDay - 100));
-            xAxis.setUpperBound(currentDay);
-        } else {
-            xAxis.setLowerBound(0);
-            xAxis.setUpperBound(currentDay);
-        }
+        xAxisLifespan.setLowerBound(0);
+        xAxisLifespan.setUpperBound(currentDay);
 
+        xAxisEnergy.setLowerBound(0);
+        xAxisEnergy.setUpperBound(currentDay);
+        
         // Wyłącz ponownie symbole po dodaniu nowych punktów
         disableSymbols(animalCountSeries);
         disableSymbols(plantCountSeries);
@@ -524,20 +532,11 @@ public class SimulationWindow {
         disableSymbols(avgLifeSpanSeries);
         disableSymbols(avgChildCountSeries);
 
-        lineChart.setAnimated(true);
+        lineChartMain.setAnimated(false);
+        lineChartLifespan.setAnimated(false);
+        lineChartEnergy.setAnimated(false);
     }
 
-    private void updateViewMode() {
-        int currentDay = simulation.getDay();
-        // Zmiana trybu wyświetlania
-        if ("Last 100 Days".equals(viewModeComboBox.getValue())) {
-            xAxis.setLowerBound(Math.max(0, currentDay - 100));
-            xAxis.setUpperBound(currentDay);
-        } else {
-            xAxis.setLowerBound(0);
-            xAxis.setUpperBound(currentDay);
-        }
-    }
 
     private void disableSymbols(XYChart.Series<Number, Number> series) {
         series.getNode().lookup(".chart-series-line").setStyle("-fx-stroke-width: 2px;"); // Ustawienie grubości linii
