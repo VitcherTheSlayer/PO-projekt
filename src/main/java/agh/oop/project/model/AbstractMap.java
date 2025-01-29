@@ -29,7 +29,7 @@ public abstract class AbstractMap implements IMoveValidator,MapChangeListener {
         };
         this.boundary = new Boundary(
                 new Vector2d(0, 0),
-                new Vector2d(configuration.width(), configuration.height())
+                new Vector2d(configuration.width() - 1, configuration.height() - 1)
         );
 
         equatorThickness = configuration.height() * EQUATOR_AREA_PERCENT / 100;

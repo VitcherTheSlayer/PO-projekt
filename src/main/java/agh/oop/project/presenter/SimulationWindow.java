@@ -308,10 +308,10 @@ public class SimulationWindow {
         Vector2d lowerLeft = bounds.lowerLeft();
         Vector2d upperRight = bounds.upperRight();
 
-        for (int x = lowerLeft.getX(); x < upperRight.getX(); x++) {
+        for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
             mapGrid.getColumnConstraints().add(new ColumnConstraints(cellSize));
         }
-        for (int y = lowerLeft.getY(); y < upperRight.getY(); y++) {
+        for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
             mapGrid.getRowConstraints().add(new RowConstraints(cellSize));
         }
 
@@ -321,10 +321,9 @@ public class SimulationWindow {
         Image Palm = new Image(getClass().getResourceAsStream("/images/Palm.png"));
         Image RedArea = new Image(getClass().getResourceAsStream("/images/RedArea.png"));
 
-
         // 1. Rysuje tło z elementami mapy owlbear
-        for (int x = lowerLeft.getX(); x < upperRight.getX(); x++) {
-            for (int y = lowerLeft.getY(); y < upperRight.getY(); y++) {
+        for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
+            for (int y = lowerLeft.getY(); y <= upperRight.getY(); y++) {
                 Vector2d position = new Vector2d(x, y);
 
                 // Sprawdzenie, czy pozycja znajduje się w granicach jungli
@@ -373,6 +372,34 @@ public class SimulationWindow {
                         mapGrid.add(owlbearImageView, x - lowerLeft.getX(), y - lowerLeft.getY());
                     }
                 }
+            }
+        }
+
+
+
+        // 3. Rysuje trawe
+        for (Map.Entry<Vector2d, Grass> entry : worldMap.getGrassMap().entrySet()) {
+            Vector2d position = entry.getKey();
+
+            // Jeśli pozycja nie jest równa pozycji Owlbeara
+            if (!position.equals(owlbearPosition)) {
+                // Tworzenie ImageView dla trawy
+                ImageView grassImageView = new ImageView(Palm);
+
+                // Dopasowanie rozmiaru obrazka
+                grassImageView.setFitWidth(50);
+                grassImageView.setFitHeight(50);
+
+                // Przekształcenie współrzędnych na siatkę
+                int gridX = position.getX();
+                int gridY = position.getY();
+
+                // Ustawienie wyrównania
+                GridPane.setHalignment(grassImageView, HPos.CENTER);
+                GridPane.setValignment(grassImageView, VPos.CENTER);
+
+                // Dodanie obrazka do siatki
+                mapGrid.add(grassImageView, gridX, gridY);
             }
         }
 
@@ -450,33 +477,6 @@ public class SimulationWindow {
             choosenAnimalHighlight[0] = createHighlightCell(position.getX(), position.getY(), new Color(0.5,0,0.5,1));
             mapGrid.getChildren().add(choosenAnimalHighlight[0]);
             updateAnimalData(choosenAnimal);
-        }
-
-
-        // 3. Rysuje trawe
-        for (Map.Entry<Vector2d, Grass> entry : worldMap.getGrassMap().entrySet()) {
-            Vector2d position = entry.getKey();
-
-            // Jeśli pozycja nie jest równa pozycji Owlbeara
-            if (!position.equals(owlbearPosition)) {
-                // Tworzenie ImageView dla trawy
-                ImageView grassImageView = new ImageView(Palm);
-
-                // Dopasowanie rozmiaru obrazka
-                grassImageView.setFitWidth(50);
-                grassImageView.setFitHeight(50);
-
-                // Przekształcenie współrzędnych na siatkę
-                int gridX = position.getX();
-                int gridY = position.getY();
-
-                // Ustawienie wyrównania
-                GridPane.setHalignment(grassImageView, HPos.CENTER);
-                GridPane.setValignment(grassImageView, VPos.CENTER);
-
-                // Dodanie obrazka do siatki
-                mapGrid.add(grassImageView, gridX, gridY);
-            }
         }
     }
 
@@ -607,7 +607,6 @@ public class SimulationWindow {
 
 
     public void showMostPopularGenom() {
-        System.out.println("Showing most popular genom");
         List<Animal> animals = worldMap.getMostPopularGenome();
         Genome mostPopularGenome = animals.get(0).getGenome();
 

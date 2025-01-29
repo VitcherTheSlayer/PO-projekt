@@ -15,15 +15,16 @@ public class GlobeMap extends AbstractMap {
             int newX = requestedPosition.getX();
             if (newX < boundary.lowerLeft().getX()) {
                 newX = boundary.upperRight().getX();
-            } else if (newX > boundary.upperRight().getX()) {
+            } else if (newX >= boundary.upperRight().getX()) {
                 newX = boundary.lowerLeft().getX();
             }
 
             Rotation newRotation = genomeMovableEntity.getRotation();
             int newY = requestedPosition.getY();
             if (newY < boundary.lowerLeft().getY() || newY > boundary.upperRight().getY()) {
-                newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT / 4);
+                newRotation = newRotation.add(Genome.UNIQUE_GENES_COUNT / 2);
                 newY = genomeMovableEntity.getPosition().getY(); // Czasami wychodziło poza mape zwierze
+                newX = genomeMovableEntity.getPosition().getX();
             }
 
             return new Pair<>(new Vector2d(newX, newY), newRotation);
