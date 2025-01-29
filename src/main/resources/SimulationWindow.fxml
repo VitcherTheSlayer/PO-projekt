@@ -48,10 +48,6 @@
                             </yAxis>
                         </LineChart>
 
-                        <HBox>
-                            <Label text="Dominujący Genom: "/>
-                            <Label fx:id="dominantGenomeLabel"/>
-                        </HBox>
                     </children>
                 </VBox>
             </center>
@@ -82,6 +78,10 @@
                         </padding>
                         <Button fx:id="showMostPopularGenom" onAction="#showMostPopularGenom" text="Pokaż najpopularniejszy genom" style="-fx-border-color: #FFD500FF;" >
                         </Button>
+                    </HBox>
+                    <HBox>
+                        <Label text="Dominujący Genom: "/>
+                        <Label fx:id="dominantGenomeLabel"/>
                     </HBox>
                     <HBox>
                         <padding>
