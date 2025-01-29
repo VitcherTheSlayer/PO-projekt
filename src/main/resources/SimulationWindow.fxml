@@ -16,7 +16,7 @@
     <children>
         <!-- Główna siatka -->
         <BorderPane prefWidth="800.0" prefHeight="600.0">
-            <!-- Statystyki po prawej stronie -->
+            <!-- Statystyki na środku -->
             <center>
                 <VBox spacing="10" alignment="TOP_LEFT" minWidth="600" maxWidth="600">
                     <padding>
@@ -26,14 +26,25 @@
                         <!-- Nagłówek -->
                         <Label text="Simulation Statistics" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-                        <!-- Wykres -->
-                        <LineChart fx:id="lineChart" prefHeight="400.0" prefWidth="580.0" minHeight="400.0" maxHeight="400.0"
+                        <!-- Pierwszy wykres (wszystkie wartości poza avgLifeSpan) -->
+                        <LineChart fx:id="lineChartMain" prefHeight="400.0" prefWidth="580.0" minHeight="400.0" maxHeight="400.0"
                                    style="-fx-stroke-width: 2px;">
                             <xAxis>
-                                <NumberAxis fx:id="xAxis" label="Day" />
+                                <NumberAxis fx:id="xAxisMain" label="Day" />
                             </xAxis>
                             <yAxis>
-                                <NumberAxis fx:id="yAxis" label="Value" />
+                                <NumberAxis fx:id="yAxisMain" label="Value" />
+                            </yAxis>
+                        </LineChart>
+
+                        <!-- Drugi wykres (tylko avgLifeSpan) -->
+                        <LineChart fx:id="lineChartLifespan" prefHeight="200.0" prefWidth="580.0" minHeight="200.0" maxHeight="200.0"
+                                   style="-fx-stroke-width: 2px;">
+                            <xAxis>
+                                <NumberAxis fx:id="xAxisLifespan" label="Day" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLifespan" label="Average Lifespan" />
                             </yAxis>
                         </LineChart>
 
@@ -44,6 +55,7 @@
                     </children>
                 </VBox>
             </center>
+
 
             <!-- Siatka symulacji po lewej -->
             <left>

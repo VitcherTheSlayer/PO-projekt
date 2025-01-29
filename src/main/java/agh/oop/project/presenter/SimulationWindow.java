@@ -87,11 +87,17 @@ public class SimulationWindow {
 
     // Elementy statystyk
     @FXML
-    private LineChart<Number, Number> lineChart;
+    private LineChart<Number, Number> lineChartMain;
     @FXML
-    private NumberAxis xAxis;
+    private NumberAxis xAxisMain;
     @FXML
-    private NumberAxis yAxis;
+    private NumberAxis yAxisMain;
+    @FXML
+    private LineChart<Number, Number> lineChartLifespan;
+    @FXML
+    private NumberAxis xAxisLifespan;
+    @FXML
+    private NumberAxis yAxisLifespan;
 
     @FXML
     private boolean isCellSelected = false;
@@ -475,7 +481,8 @@ public class SimulationWindow {
         avgLifeSpanSeries.setName("Average Lifespan");
         avgChildCountSeries.setName("Average Child Count");
 
-        lineChart.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgLifeSpanSeries, avgChildCountSeries);
+        lineChartMain.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgChildCountSeries);
+        lineChartLifespan.getData().add(avgLifeSpanSeries);
 
         // Wyłączenie symboli (kropek) na liniach
         disableSymbols(animalCountSeries);
@@ -501,8 +508,11 @@ public class SimulationWindow {
         avgChildCountSeries.getData().add(new XYChart.Data<>(currentDay, stats.averageChildCount()));
         dominantGenomeLabel.setText(stats.dominantGenome().toString());
 
-        xAxis.setLowerBound(0);
-        xAxis.setUpperBound(currentDay);
+        xAxisMain.setLowerBound(0);
+        xAxisMain.setUpperBound(currentDay);
+
+        xAxisLifespan.setLowerBound(0);
+        xAxisLifespan.setUpperBound(currentDay);
 
         // Wyłącz ponownie symbole po dodaniu nowych punktów
         disableSymbols(animalCountSeries);
@@ -512,7 +522,8 @@ public class SimulationWindow {
         disableSymbols(avgLifeSpanSeries);
         disableSymbols(avgChildCountSeries);
 
-        lineChart.setAnimated(true);
+        lineChartMain.setAnimated(false);
+        lineChartLifespan.setAnimated(false);
     }
 
 
