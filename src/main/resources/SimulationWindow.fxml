@@ -27,7 +27,7 @@
                         <Label text="Simulation Statistics" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
                         <!-- Pierwszy wykres (wszystkie wartości poza avgLifeSpan) -->
-                        <LineChart fx:id="lineChartMain" prefHeight="400.0" prefWidth="580.0" minHeight="400.0" maxHeight="400.0"
+                        <LineChart fx:id="lineChartMain" prefHeight="400.0" prefWidth="580.0" minHeight="300.0" maxHeight="300.0"
                                    style="-fx-stroke-width: 2px;">
                             <xAxis>
                                 <NumberAxis fx:id="xAxisMain" label="Day" />
@@ -45,6 +45,17 @@
                             </xAxis>
                             <yAxis>
                                 <NumberAxis fx:id="yAxisLifespan" label="Average Lifespan" />
+                            </yAxis>
+                        </LineChart>
+
+                        <!-- Drugi wykres (tylko avgEnergy) -->
+                        <LineChart fx:id="lineChartEnergy" prefHeight="200.0" prefWidth="580.0" minHeight="200.0" maxHeight="200.0"
+                                   style="-fx-stroke-width: 2px;">
+                            <xAxis>
+                                <NumberAxis fx:id="xAxisEnergy" label="Day" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisEnergy" label="Average Lifespan" />
                             </yAxis>
                         </LineChart>
 
@@ -94,28 +105,29 @@
                     <HBox>
                         <Label fx:id="selectedAnimalPresenter" text="Dane animala" />
                     </HBox>
+                    <VBox spacing="10" alignment="CENTER">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10" />
+                        </padding>
+                        <children>
+                            <!-- Status symulacji -->
+                            <Label fx:id="simulationStatusLabel" text="Simulation Status" style="-fx-font-size: 14;" />
+
+                            <!-- Przycisk kontrolny -->
+                            <HBox spacing="10" alignment="CENTER">
+                                <children>
+                                    <ToggleButton fx:id="pauseButton" text="Pause" onAction="#onClickPause" />
+                                    <ToggleButton fx:id="resumeButton" text="Resume" onAction="#onClickPlay" />
+                                    <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart"  style="-fx-border-color: #40FF00FF;" />
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
                 </VBox>
             </right>
             <!-- Sekcja poniżej siatki -->
             <bottom>
-                <VBox spacing="10" alignment="CENTER">
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10" />
-                    </padding>
-                    <children>
-                        <!-- Status symulacji -->
-                        <Label fx:id="simulationStatusLabel" text="Simulation Status" style="-fx-font-size: 14;" />
 
-                        <!-- Przycisk kontrolny -->
-                        <HBox spacing="10" alignment="CENTER">
-                            <children>
-                                <ToggleButton fx:id="pauseButton" text="Pause" onAction="#onClickPause" />
-                                <ToggleButton fx:id="resumeButton" text="Resume" onAction="#onClickPlay" />
-                                <ToggleButton fx:id="startButton" text="START" onAction="#onClickStart"  style="-fx-border-color: #40FF00FF;" />
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
             </bottom>
         </BorderPane>
     </children>

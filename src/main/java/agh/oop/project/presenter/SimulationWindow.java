@@ -98,6 +98,12 @@ public class SimulationWindow {
     private NumberAxis xAxisLifespan;
     @FXML
     private NumberAxis yAxisLifespan;
+    @FXML
+    private LineChart<Number, Number> lineChartEnergy;
+    @FXML
+    private NumberAxis xAxisEnergy;
+    @FXML
+    private NumberAxis yAxisEnergy;
 
     @FXML
     private boolean isCellSelected = false;
@@ -481,8 +487,9 @@ public class SimulationWindow {
         avgLifeSpanSeries.setName("Average Lifespan");
         avgChildCountSeries.setName("Average Child Count");
 
-        lineChartMain.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgEnergySeries, avgChildCountSeries);
+        lineChartMain.getData().addAll(animalCountSeries, plantCountSeries, freeFieldSeries, avgChildCountSeries);
         lineChartLifespan.getData().add(avgLifeSpanSeries);
+        lineChartEnergy.getData().add(avgEnergySeries);
 
         // Wyłączenie symboli (kropek) na liniach
         disableSymbols(animalCountSeries);
@@ -514,6 +521,9 @@ public class SimulationWindow {
         xAxisLifespan.setLowerBound(0);
         xAxisLifespan.setUpperBound(currentDay);
 
+        xAxisEnergy.setLowerBound(0);
+        xAxisEnergy.setUpperBound(currentDay);
+        
         // Wyłącz ponownie symbole po dodaniu nowych punktów
         disableSymbols(animalCountSeries);
         disableSymbols(plantCountSeries);
@@ -524,6 +534,7 @@ public class SimulationWindow {
 
         lineChartMain.setAnimated(false);
         lineChartLifespan.setAnimated(false);
+        lineChartEnergy.setAnimated(false);
     }
 
 
