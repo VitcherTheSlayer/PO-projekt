@@ -51,6 +51,8 @@ public class SettingsWindow {
     private TextField swapMutationPercentTF;
     @FXML
     private TextField genomeLengthTF;
+    @FXML
+    private Label errorConfigDisplay;
 
     @FXML
     private Button saveButton;
@@ -94,42 +96,48 @@ public class SettingsWindow {
     }
 
     private Configuration getConfig() {
-        int height = Integer.parseInt(heightTF.getText());
-        int width = Integer.parseInt(widthTF.getText());
-        MapVariant mapVariant = MapVariant.fromString(mapVariantCB.getValue());
-        int initialPlants = Integer.parseInt(initialPlantsTF.getText());
-        int energyPerPlant = Integer.parseInt(energyPerPlantTF.getText());
-        int plantGrowthPerDay = Integer.parseInt(plantGrowthPerDayTF.getText());
-        int initialAnimals = Integer.parseInt(initialAnimalsTF.getText());
-        int initialEnergy = Integer.parseInt(initialEnergyTF.getText());
-        int reproductionMinEnergy = Integer.parseInt(reproductionMinEnergyTF.getText());
-        int reproductionEnergyUsage = Integer.parseInt(reproductionEnergyUsageTF.getText());
-        int minMutations = Integer.parseInt(minMutationsTF.getText());
-        int maxMutations = Integer.parseInt(maxMutationsTF.getText());
-        MutationVariant mutationVariant = MutationVariant.fromString(mutationVariantCB.getValue());
-        int swapMutationPercent = Integer.parseInt(swapMutationPercentTF.getText());
-        int genomeLength = Integer.parseInt(genomeLengthTF.getText());
+        try {
+            int height = Integer.parseInt(heightTF.getText());
+            int width = Integer.parseInt(widthTF.getText());
+            MapVariant mapVariant = MapVariant.fromString(mapVariantCB.getValue());
+            int initialPlants = Integer.parseInt(initialPlantsTF.getText());
+            int energyPerPlant = Integer.parseInt(energyPerPlantTF.getText());
+            int plantGrowthPerDay = Integer.parseInt(plantGrowthPerDayTF.getText());
+            int initialAnimals = Integer.parseInt(initialAnimalsTF.getText());
+            int initialEnergy = Integer.parseInt(initialEnergyTF.getText());
+            int reproductionMinEnergy = Integer.parseInt(reproductionMinEnergyTF.getText());
+            int reproductionEnergyUsage = Integer.parseInt(reproductionEnergyUsageTF.getText());
+            int minMutations = Integer.parseInt(minMutationsTF.getText());
+            int maxMutations = Integer.parseInt(maxMutationsTF.getText());
+            MutationVariant mutationVariant = MutationVariant.fromString(mutationVariantCB.getValue());
+            int swapMutationPercent = Integer.parseInt(swapMutationPercentTF.getText());
+            int genomeLength = Integer.parseInt(genomeLengthTF.getText());
 
-        System.out.println(csv);
+            System.out.println(csv);
 
-        return new Configuration(
-                height,
-                width,
-                mapVariant,
-                initialPlants,
-                energyPerPlant,
-                plantGrowthPerDay,
-                initialAnimals,
-                initialEnergy,
-                reproductionMinEnergy,
-                reproductionEnergyUsage,
-                minMutations,
-                maxMutations,
-                mutationVariant,
-                swapMutationPercent,
-                genomeLength,
-                csv
-        );
+            return new Configuration(
+                    height,
+                    width,
+                    mapVariant,
+                    initialPlants,
+                    energyPerPlant,
+                    plantGrowthPerDay,
+                    initialAnimals,
+                    initialEnergy,
+                    reproductionMinEnergy,
+                    reproductionEnergyUsage,
+                    minMutations,
+                    maxMutations,
+                    mutationVariant,
+                    swapMutationPercent,
+                    genomeLength,
+                    csv
+            );
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            errorConfigDisplay.setText(e.getMessage());
+        }
+        return null;
     }
 
     @FXML
@@ -161,7 +169,6 @@ public class SettingsWindow {
 
     @FXML
     private void startSimulation() throws IOException {
-        System.out.println("start Symulacji");
 
         // Załaduj nową scenę symulacji
         FXMLLoader simulationLoader = new FXMLLoader();

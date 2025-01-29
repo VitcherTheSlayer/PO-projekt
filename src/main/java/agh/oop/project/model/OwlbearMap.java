@@ -18,7 +18,7 @@ public class OwlbearMap extends GlobeMap {
         // Długość boku terenu łowieckiego
         int c = (int) Math.sqrt(0.2 * width * height);
 
-        Vector2d lowerLeft = RandomPositionGenerator.getRandomPosition(width-c, height-c);
+        Vector2d lowerLeft = RandomPositionGenerator.getRandomPosition(width-c-1, height-c-1);
         Vector2d upperRight = lowerLeft.add(new Vector2d(c,c));
         huntingGround = new Boundary(lowerLeft, upperRight);
 

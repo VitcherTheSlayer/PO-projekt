@@ -30,10 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
 public class SimulationWindow {
@@ -65,13 +62,9 @@ public class SimulationWindow {
     private final XYChart.Series<Number, Number> avgChildCountSeries = new XYChart.Series<>();
 
     @FXML
-    private Label statisticsPresenter; // Do poprawki, narazie prowizorycznie
-    @FXML
-    private Label selectedAnimalPresenter; // Do poprawki, narazie prowizorycznie
-
+    private Label selectedAnimalPresenter;
     @FXML
     private Button chooseAnimal;
-
     @FXML
     private GridPane mapGrid;
     @FXML
@@ -87,7 +80,7 @@ public class SimulationWindow {
     private Animal choosenAnimal = null;
 
     @FXML
-    final Canvas[] choosenAnimalHighlight = {null}; // Przechowuje aktualnie podświetloną komórkę
+    final Canvas[] choosenAnimalHighlight = {null};
 
     @FXML
     final Canvas[] popularGenomeHighlight = {null};
@@ -95,25 +88,17 @@ public class SimulationWindow {
     // Elementy statystyk
     @FXML
     private LineChart<Number, Number> lineChart;
-
     @FXML
     private NumberAxis xAxis;
-
     @FXML
     private NumberAxis yAxis;
-
     @FXML
     private ComboBox<String> viewModeComboBox;
 
     @FXML
-    private Button saveStatistics;
-
-    @FXML
     private boolean isCellSelected = false;
-
     @FXML
     private Button showMostPopularGenom;
-
     @FXML
     private Label dominantGenomeLabel;
 
@@ -122,7 +107,7 @@ public class SimulationWindow {
         if (!simulationRunning) {
             resumeButton.setSelected(true);
             pauseButton.setSelected(false);
-            System.out.println("simulation.resume();");
+            simulationStatusLabel.setText("Resumed - running...");
             simulationRunning = true;
             simulation.resume();
         }
@@ -134,7 +119,7 @@ public class SimulationWindow {
         if (simulationRunning) {
             pauseButton.setSelected(true);
             resumeButton.setSelected(false);
-            System.out.println("simulation.pause();");
+            simulationStatusLabel.setText("Paused...");
             simulationRunning = false;
             simulation.pause();
         }
@@ -143,8 +128,8 @@ public class SimulationWindow {
 
     @FXML
     public void onClickStart() {
-        System.out.println("simulation.start();");
-        if (!simulationRunning) {
+        if (!simulationRunning && simulation.getDay()<1) {
+            simulationStatusLabel.setText("Running...");
             simulationRunning = true;
             Thread simulationThread = new Thread(() -> {
                 try {
@@ -164,7 +149,6 @@ public class SimulationWindow {
         isCellSelected = false;
 
         mapGrid.setOnMouseMoved(event -> {
-            // Śledzenie współrzędnych myszy
             Point2D localCoords = mapGrid.sceneToLocal(event.getSceneX(), event.getSceneY());
             double localX = localCoords.getX();
             double localY = localCoords.getY();
@@ -175,9 +159,9 @@ public class SimulationWindow {
             if (cellX < 0 || cellX >= mapGrid.getColumnCount() || cellY < 0 || cellY >= mapGrid.getRowCount()) {
                 if (activeHighlight[0] != null) {
                     mapGrid.getChildren().remove(activeHighlight[0]);
-                    activeHighlight[0] = null; // Resetujemy zmienną aktywnego podświetlenia
+                    activeHighlight[0] = null;
                 }
-                return; // Poza mapą - ignorujemy
+                return;
             }
 
             if ((activeHighlight[0] == null ||
@@ -205,76 +189,64 @@ public class SimulationWindow {
                 int clickedCellX = (int) (clickX / cellSize);
                 int clickedCellY = (int) (clickY / cellSize);
 
-                // Warunek: jeśli spełniony, podświetlamy komórkę na zielono i blokujemy dalsze podświetlanie
                 if (shouldHighlightGreen(clickedCellX, clickedCellY)) {
-                    // Jeśli spełniony warunek, podświetlamy komórkę na zielono
                     if (activeHighlight[0] != null) {
-                        mapGrid.getChildren().remove(activeHighlight[0]); // Usuwamy poprzednie podświetlenie
+                        mapGrid.getChildren().remove(activeHighlight[0]);
                     }
 
-                    // Tworzymy nową komórkę na zielono
                     activeHighlight[0] = createHighlightCell(clickedCellX, clickedCellY,new Color(0,1,0,1));
                     mapGrid.getChildren().add(activeHighlight[0]);
 
-                    // Ustawiamy, że komórka została wybrana
-                    isCellSelected = true; // Blokujemy możliwość podświetlania innych komórek
+                    isCellSelected = true;
 
-//                    updateAnimalData(worldMap.getFirstAnimalAt(new Vector2d(clickedCellX, clickedCellY)));
                     choosenAnimal = worldMap.getFirstAnimalAt(new Vector2d(clickedCellX,clickedCellY));
                     drawMapReforged();
                 } else {
                     if (activeHighlight[0] != null) {
-                        mapGrid.getChildren().remove(activeHighlight[0]); // Usuwamy poprzednie podświetlenie
+                        mapGrid.getChildren().remove(activeHighlight[0]);
                     }
                     activeHighlight[0] = createHighlightCell(clickedCellX, clickedCellY,new Color(1,0,0,1));
                     mapGrid.getChildren().add(activeHighlight[0]);
 
                     isCellSelected = true;
                 }
-                mapGrid.setOnMouseMoved(null);  // Usuwamy obsługę ruchu myszy
-                mapGrid.setOnMouseClicked(null); // Usuwamy obsługę wyjścia myszy
+                mapGrid.setOnMouseMoved(null);
+                mapGrid.setOnMouseClicked(null);
             }
         });
 
-        // Dodajemy zdarzenie wyjścia myszy poza mapę
         mapGrid.setOnMouseExited(event -> {
             // Gdy myszka opuści mapę, usuwamy podświetlenie
             if (activeHighlight[0] != null) {
                 mapGrid.getChildren().remove(activeHighlight[0]);
-                activeHighlight[0] = null; // Resetujemy zmienną aktywnego podświetlenia
+                activeHighlight[0] = null;
             }
         });
     }
 
-    // Funkcja tworząca podświetlenie dla określonej komórki
     private Canvas createHighlightCell(int cellX, int cellY,Color color) {
         Canvas highlightCanvas = new Canvas(cellSize, cellSize);
 
-        // Pozycjonowanie Canvasa na odpowiedniej komórce
         highlightCanvas.setTranslateX(cellX * cellSize + 0.400001525878906*cellX);
         highlightCanvas.setTranslateY(cellY * cellSize + 0.400001525878906*cellY);
 
-        // Rysowanie gradientowej ramki
         GraphicsContext gc = highlightCanvas.getGraphicsContext2D();
 
-        // Gradient od środka na zewnątrz
         gc.setFill(new LinearGradient(
                 0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, color.deriveColor(0, 1, 1, 0.3)), // Początek: półprzezroczysty kolor
-                new Stop(1, Color.TRANSPARENT)               // Koniec: przezroczysty
+                new Stop(0, color.deriveColor(0, 1, 1, 0.3)),
+                new Stop(1, Color.TRANSPARENT)
         ));
 
         gc.fillRect(0, 0, cellSize, cellSize);
 
-        // Ramka w mocnym niebieskim kolorze
         gc.setStroke(color);
-        gc.setLineWidth(3); // Grubość krawędzi
+        gc.setLineWidth(3);
         gc.strokeRect(0, 0, cellSize, cellSize);
 
         return highlightCanvas;
     }
 
-    // Przykładowy warunek sprawdzający, czy kliknięta komórka spełnia wymagania
     private boolean shouldHighlightGreen(int x, int y) {
         Animal animal = worldMap.getFirstAnimalAt(new Vector2d(x, y));
         return animal != null;
@@ -287,7 +259,7 @@ public class SimulationWindow {
 
     public void init(Stage stage) {
         this.stage = stage;
-
+        simulationStatusLabel.setText("Waiting for START");
         stage.setOnCloseRequest(event -> {
             closed = true;
         });
@@ -316,10 +288,10 @@ public class SimulationWindow {
         }
 
         // 0.Pobieram obrazki
-        Image Desert = new Image(getClass().getResourceAsStream("/images/Desert.png"));
-        Image Jungle = new Image(getClass().getResourceAsStream("/images/Jungle.png"));
-        Image Palm = new Image(getClass().getResourceAsStream("/images/Palm.png"));
-        Image RedArea = new Image(getClass().getResourceAsStream("/images/RedArea.png"));
+        Image Desert = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Desert.png")));
+        Image Jungle = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Jungle.png")));
+        Image Palm = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Palm.png")));
+        Image RedArea = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/RedArea.png")));
 
         // 1. Rysuje tło z elementami mapy owlbear
         for (int x = lowerLeft.getX(); x <= upperRight.getX(); x++) {
@@ -363,7 +335,7 @@ public class SimulationWindow {
                     this.owlbearPosition = owlbear.getPosition();
 
                     if (position.equals(owlbearPosition)) {
-                        Image owlbearImage = new Image(getClass().getResourceAsStream("/images/Owlbear/" + owlbear.getRotation() + ".png"));
+                        Image owlbearImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Owlbear/" + owlbear.getRotation() + ".png")));
                         ImageView owlbearImageView = new ImageView(owlbearImage);
                         owlbearImageView.setFitWidth(50);
                         owlbearImageView.setFitHeight(50);
@@ -417,7 +389,7 @@ public class SimulationWindow {
                     Vector2d animalPosition = animal.getPosition();
 
                     // Budujemy ścieżkę do obrazka zwierzęcia
-                    Image animalImage = new Image(getClass().getResourceAsStream("/images/Animal/" + animalDirection + ".png"));
+                    Image animalImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Animal/" + animalDirection + ".png")));
 
                     // Tworzymy ImageView, aby wyświetlić obrazek
                     ImageView animalImageView = new ImageView(animalImage);
@@ -576,10 +548,6 @@ public class SimulationWindow {
         }
     }
 
-    public void saveData() throws IOException {
-        //simulation.getStatsCollector().exportToCsv();
-    }
-
     public void updateAnimalData(Animal animal) {
         Genome genome = animal.getGenome();
         int energy = animal.getEnergy();
@@ -616,7 +584,6 @@ public class SimulationWindow {
         for (Animal animal : animals) {
             Vector2d position = animal.getPosition();
             Canvas highlight = createHighlightCell(position.getX(), position.getY(), new Color(1, 1, 0, 1));
-//            highlights.add(highlight);
             mapGrid.getChildren().add(highlight);
         }
     }

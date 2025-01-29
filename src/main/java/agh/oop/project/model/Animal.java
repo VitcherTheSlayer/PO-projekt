@@ -10,6 +10,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     private int grassEaten = 0;
     private int deathTime = -1;
     private String deathReason = "";
+    private int energyUsage = 1;
 
     public Animal(Genome genome, Vector2d position, Rotation rotation, AbstractMap map) {
         super(genome, position, rotation);
@@ -96,7 +97,7 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     @Override
     public Vector2d move(IMoveValidator moveValidator) {
         ++age;
-        --energy; // Dajmy że jeden zużywają na ruch
+        energy -= energyUsage;
         return super.move(moveValidator);
     }
 
@@ -128,12 +129,6 @@ public class Animal extends GenomeMovableEntity implements Comparable<Animal> {
     }
 
     public int descendantsCount() {
-        // dumb idea, allows for duplicates
-//        int count = 0;
-//        for(Animal child : children) {
-//            count += child.descendantsCount() + 1;
-//        }
-//        return count;
 
         int count = 0;
         Animal curr = null;
